@@ -1,0 +1,283 @@
+
+{% extends "base_login.html" %}
+{% load static %}
+{% block content %}
+<style>
+  .filterDiv {
+    float: left;
+    background-color: #2196F3;
+
+    text-align: center;
+    margin: 2px;
+    display: none;
+  }
+  
+  .show {
+    display: block;
+  }
+  
+  
+  /* Style the buttons */
+  .btn {
+    font-size: 16pt;
+    background-color: #A2CB83;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #ddd;
+  }
+  
+  .btn.active {
+    background-color: #aacc6c;
+    color: white;
+  }
+  </style>
+<body class="user" onload="sumargripe()">
+
+<div style="height: 3%;"></div>
+<label></label>
+
+<div class="container"> 
+  <h1 style="text-align: center;">Seleccione que turnos desea ver</h1>
+  <br>
+  <div id="myBtnContainer" style="text-align:center;">
+    <button class="btn active" onclick="filterSelection('Total')"> Stock Total</button>
+    <button class="btn" onclick="filterSelection('Polideportivo')"> Polideportivo</button>
+    <button class="btn" onclick="filterSelection('Corralón Municipal')"> Corralón Municipal</button>
+    <button class="btn" onclick="filterSelection('Hospital 9 de julio')"> Hospital 9 de julio</button>
+  
+  </div>
+  <br>
+  <br>
+ <div class="row">
+
+  {% for vacunatorio, dicci_vacuna in turnos.items %}
+    {% for vacuna, lista_turnos in dicci_vacuna.items %}
+      <div class="col-3 filterDiv {{vacunatorio}}" style="margin-bottom: 5%; "  data-eventtype="{{vacunatorio}}">
+      <p style="font-weight: 600;">lugar: {{vacunatorio}}</p>
+        <p style="font-weight: 600;">Tipo vacuna: {{vacuna}}</p>
+        <input type="text" id="{{vacuna}}{{vacunatorio}}T" hidden value="{{lista_turnos.0}}">
+        <input type="text" id="{{vacuna}}{{vacunatorio}}E" hidden value="{{lista_turnos.1}}">
+        <p style="font-weight: 600;">Turnos asignados: {{lista_turnos.0}}</p>
+        <p style="font-weight: 600;">En espera: {{lista_turnos.1}}</p>
+        <input type="hidden" value="{{vacunatorio}}"  id="lugar_t">
+        <input type="hidden" value="{{vacuna}}" id="tipo-d"/>
+          <button type="button" value="{{vacuna}}" id="{{vacunatorio}}C" class="button2" data-toggle="modal" data-target="#modalLoginForm" style="padding: 7px 20px; font-size: 15px;" onclick="myFunction4(this)">Asignar turno</button>
+          <p></p>
+          
+      </div>
+      <div class="col-1 filterDiv {{vacunatorio}}" style="background-color: transparent;" data-eventtype="{{vacunatorio}}"></div>
+    {% endfor %}  
+  {% endfor %}
+    <div class="col-3 filterDiv Total" data-eventtype="Total">
+      <p style="font-weight: 600;">Total de los vacunatorios</p>
+      <p style="font-weight: 600;">Tipo de vacuna: gripe</p>
+      <p style="font-weight: 600;" id="gripeTodosTurnos">Turnos asignados:  </p>
+      <p style="font-weight: 600;" id="gripeTodosNoTurnos">En espera: </p>
+    </div>
+    <div class="col-1 filterDiv Total" style="background-color: transparent;" data-eventtype="Total"></div>
+    <div class="col-3 filterDiv Total" data-eventtype="Total">
+        <p style="font-weight: 600;">Total de los vacunatorios</p>
+        <p style="font-weight: 600;">Tipo de vacuna: Covid-19</p>
+        <p style="font-weight: 600;"id="CovidTodosTurnos">Turnos asignados:  </p>
+        <p style="font-weight: 600;" id="CovidTodosNoTurnos">En espera:  </p>
+    </div>
+    <div class="col-1 filterDiv Total" style="background-color: transparent;" data-eventtype="Total"></div>
+    <div class="col-3 filterDiv Total" data-eventtype="Total">
+      <p style="font-weight: 600;">Total de los vacunatorios</p>
+      <p style="font-weight: 600;">Tipo de vacuna: Fiebre_amarilla</p>
+      <p style="font-weight: 600;"id="FATodosTurnos">Turnos asignados:  </p>
+      <p style="font-weight: 600;"id="FATodosNoTurnos">En espera:  </p>
+    </div>
+    <div class="col-1 filterDiv Total" style="background-color: transparent;" data-eventtype="Total"></div>
+    </div>
+ </div>
+
+<form action="/asignar_turno_manual/" method="POST" id="edit_form">{% csrf_token %}
+ <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+   aria-hidden="true">
+   <div class="modal-dialog" role="document">
+     <div class="modal-content">
+       <div class="modal-header text-center" style="background: #a2cb83d8;">
+         <h4 class="modal-title w-100 font-weight-bold">Asignar turno</h4>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true"></span>
+         </button>
+       </div>
+       <div class="modal-body mx-3">
+
+         <div class="md-form mb-4">
+           
+           <label data-error="wrong" data-success="right" for="defaultForm-pass">Tipo</label>
+           <input  id="Tipo" name="Tipo" class="form-control validate" readonly>
+
+         </div>
+         <div class="md-form mb-4">
+           
+          <label data-error="wrong" data-success="right" for="defaultForm-pass">Vacunatorio</label>
+          <input  id="lugar" name="Vacunatorio" class="form-control validate" readonly>
+
+        </div>
+     
+           <div class="md-form mb-4">
+             
+             <label data-error="wrong" data-success="right" for="defaultForm-email">Cantidad</label>
+             <input type="number" id="Cantidad" name="Cantidad" class="form-control validate" required>
+             
+           </div>
+
+       </div>
+       <div class="modal-footer d-flex justify-content-center">
+         <button type="submit" class="button2 btn-default" style="width: 100%;">Aceptar</button>
+       </div>
+     </div>
+   </div>
+ </div>
+</form>
+
+
+{% if mensaje != "" %}
+{% if mensaje != None %}
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{ mensaje }}
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+<script type="text/javascript" language="JavaScript">
+    let myModal = new bootstrap.Modal(document.getElementById('exampleModalCenter'), {});
+    myModal.show();
+</script>
+{% endif %}
+{% endif %}
+
+
+<script>  
+filterSelection("Total")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("filterDiv");
+  console.log(x);
+  if (c == "all") c = "";
+  // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+  for (i = 0; i < x.length; i++) {
+    w3RemoveClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+  }
+}
+
+// Show filtered elements
+function w3AddClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {
+      element.className += " " + arr2[i];
+    }
+  }
+}
+
+// Hide elements that are not selected
+function w3RemoveClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current control button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+
+
+    // si la respuesta que se espera es sumar
+    function sumargripe(){
+        var numerog1 = parseInt(document.getElementById('GripeCorralón MunicipalT').value);
+        var numerog2 = parseInt(document.getElementById('GripePolideportivoT').value);
+        var numerog3 = parseInt(document.getElementById('GripeHospital 9 de julioT').value);
+        var suma1 = numerog1+numerog2+numerog3;
+        $('#gripeTodosTurnos').append(suma1);
+
+        var numeroc1 = document.getElementById('COVID-19Corralón MunicipalT').value;
+        var numeroc2 = document.getElementById('COVID-19PolideportivoT').value;
+        var numeroc3 = document.getElementById('COVID-19Hospital 9 de julioT').value;
+        var suma2 = parseInt(numeroc1)+parseInt(numeroc2)+parseInt(numeroc3);
+        $('#CovidTodosTurnos').append(suma2);
+        
+        var numerof1 = document.getElementById('Fiebre_amarillaCorralón MunicipalT').value;
+        var numerof2 = document.getElementById('Fiebre_amarillaPolideportivoT').value;
+        var numerof3 = document.getElementById('Fiebre_amarillaHospital 9 de julioT').value;
+        var suma3 = parseInt(numerof1)+parseInt(numerof2)+parseInt(numerof3);
+        $('#FATodosTurnos').append(suma3);
+         
+
+        var numerog1 = parseInt(document.getElementById('GripeCorralón MunicipalE').value);
+        var numerog2 = parseInt(document.getElementById('GripePolideportivoE').value);
+        var numerog3 = parseInt(document.getElementById('GripeHospital 9 de julioE').value);
+        var suma1 = numerog1+numerog2+numerog3;
+        $('#gripeTodosNoTurnos').append(suma1);
+
+        var numeroc1 = document.getElementById('COVID-19Corralón MunicipalE').value;
+        var numeroc2 = document.getElementById('COVID-19PolideportivoE').value;
+        var numeroc3 = document.getElementById('COVID-19Hospital 9 de julioE').value;
+        var suma2 = parseInt(numeroc1)+parseInt(numeroc2)+parseInt(numeroc3);
+        $('#CovidTodosNoTurnos').append(suma2);
+        
+        var numerof1 = document.getElementById('Fiebre_amarillaCorralón MunicipalE').value;
+        var numerof2 = document.getElementById('Fiebre_amarillaPolideportivoE').value;
+        var numerof3 = document.getElementById('Fiebre_amarillaHospital 9 de julioE').value;
+        var suma3 = parseInt(numerof1)+parseInt(numerof2)+parseInt(numerof3);
+        $('#FATodosNoTurnos').append(suma3);
+        } 
+ 
+</script>
+
+  
+ 
+<script> 
+function myFunction4(eve){
+  var firstValue = eve.id;
+  var tipo = firstValue.substr(firstValue.length -1);
+  firstValue = firstValue.slice(0,-1);
+  var secondValue = eve.value;
+  console.log(secondValue);
+  console.log(firstValue);
+  if (tipo === "C") {
+    $("#Tipo").val(secondValue);
+    $("#lugar").val(firstValue);
+
+}
+}
+</script>
+
+</body>
+
+{% endblock %}

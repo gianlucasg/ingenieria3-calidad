@@ -1,0 +1,153 @@
+ {% extends "base_login.html" %}
+ {% load static %}
+ {% block content %}
+<body class="user">
+
+<div class="container-sm" style="float: left; padding-left: 5%; padding-top: 4%;">
+    <div class="col-12" style="height: 100%; background-color: #fff;">
+        <table class="table table-hover" id="myTable" style="background-color: white;  border: 1px solid; border-color: black; ">
+          <p style="background-color: white;"><strong>Mis turnos:</strong></p>
+            <thead class="table-secondary">
+            <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Vacuna</th>
+                <th scope="col">Vacunatorio</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody style="overflow: scroll;">
+            {% for turno in turnos %}
+            <tr>
+                <td class="dni_t">{{turno.fecha.day}}/{{turno.fecha.month}}/{{turno.fecha.year}}</td>
+                <td class="tipo_t">{{turno.vacuna.tipo}}</td>
+                <td class="row_c">{{turno.vacunatorio.nombre}}</td>
+                <td class="edit_row"><button class="button2" style="font-size: small; padding: 5px 4px;">Posponer</button></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if Confi != "" %}
+<form action="/confirmacion_posponer_turno/" method="POST" id="">{% csrf_token %}
+  <div class="modal fade" id="modalCargaSinTurno" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center" style="background: #a2cb83d8;">
+          <h4 class="modal-title w-100 font-weight-bold">Confirmación de cancelación</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+
+          <div class="md-form mb-4">   
+            <p>{{ mensaje }}</p>
+          </div>
+
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="submit" id="cargarSinTurno" class="button2 btn-default"  value = "{{ tipo_a_cargar }}"style="min-width: 50%;">Confirmar</button>
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="button" id="cargarSinTurno" data-dismiss="modal" class="button2 btn-default"  value = "{{ tipo_a_cargar }}"style="min-width: 50%;">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<script type="text/javascript" language="JavaScript">
+  let modalCargaSinTurno = new bootstrap.Modal(document.getElementById('modalCargaSinTurno'), {});
+  modalCargaSinTurno.show();
+</script>
+
+
+{% elif mensaje != "" %}
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{ mensaje }}
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+<script type="text/javascript" language="JavaScript">
+    let myModal = new bootstrap.Modal(document.getElementById('exampleModalCenter'), {});
+    myModal.show();
+    </script>
+{% endif %}
+
+<form action="/posponer_turno/" method="POST" id="formularioBotones">{% csrf_token %}
+  <div  class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center" style="background: #a2cb83d8;">
+          <h4 class="modal-title w-100 font-weight-bold">Posponer turno</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+          <input type="text" id="dni" name="Dni" hidden value="{{user.dni}}">
+          <input type="text" name="Tipo" id="tipo" hidden value="">
+          <input type="text" name="Dias" id="dias" hidden value="">
+
+        </div>
+        <div class="modal-body mx-3" style="justify-items: center;">
+          <div class="row d-flex" style="padding:3%; justify-content: center;">
+          <button type="button" class="button2 btn-default" value="15" style="max-width: 45%; margin-right: 2%;" onclick=functionPosponer(this)>A 15 dias</button>
+          <button type="button" class="button2 btn-default" value="30" style="max-width: 45%; margin-left: 2%;" onclick=functionPosponer(this)>A 30 dias</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+</body>
+<script>
+  var edit_row = document.querySelectorAll('#myTable .edit_row');
+  for(var i=0; i<edit_row.length; i++) {
+    edit_row[i].addEventListener('click', function(e){
+      // get parent row, add data from its cells in form fields
+      var tr_parent = this.parentNode;
+      document.getElementById('tipo').value = tr_parent.querySelector('.tipo_t').innerHTML;
+
+      // display the form, and focus on a form field
+      $("#modalLoginForm").modal()
+      document.getElementById('dni').focus();
+    }, false);
+
+  }
+</script>
+<script>
+  function functionPosponer(eve){
+    var boton = eve.value;
+    elemento = document.getElementById("dias");
+    if (boton == "15"){
+      
+      elemento.setAttribute('value', "15");
+      
+    }
+    if (boton == "30"){
+      
+      elemento.setAttribute('value', "30");
+      
+    } 
+    eve.setAttribute('type', "submit");
+    eve.click();
+  }
+</script>
+
+{% endblock %}

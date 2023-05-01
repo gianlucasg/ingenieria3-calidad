@@ -1,0 +1,51 @@
+ {% extends "HeaderBaseNoLog.html" %}
+ {% load static %}
+
+ {% block title %} VacunAssist
+ {% endblock %}
+
+
+ {% block content %}
+<body class="no_user">
+  
+  <main class="fondo">
+      <div class="layer">
+        <div class="infoPrincipal">
+          <p class="container-fluid " style="background-color: #A2CB83 ;border: 5px solid #3b6e22; justify-content: center;align-items: center; min-height:100px;font-size: 45px; text-align: center; color: white;"><strong><span style="vertical-align: middle;"  >Campañas</span> </strong></p>
+          <p class="fuenteCampañas" style="margin-top: 20px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Vestibulum in varius orci. Vestibulum ante ipsum primis in faucibus orci luctus et 
+            ultrices posuere cubilia curae; Fusce vulputate mi orci, a tincidunt quam mattis vitae. Etiam ac sollicitudin
+            justo. Sed vel posuere mauris. Ut nisi odio, feugiat quis est sed, viverra consequat ipsum. Donec est sem, blandit
+              et magna nec, pulvinar placerat ex. Donec consectetur id leo non dapibus.</p>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <img class="img-campaña" src="{% static 'Vacunasist/images/bacteria.jpg' %}" alt="">
+                <h2 class="titulo2">Gripe</h2>
+                <p class="fuenteCampañas">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in varius orci. Vestibulum ante ipsum primis in
+                faucibus orci luctus et ultrices posuere cubilia curae; Fusce
+                vulputate mi orci, a tincidunt quam mattis vitae.</p>
+            </div>
+          <div  class="col-sm-4">
+                <img class="img-campaña" src="{% static 'Vacunasist/images/bacteria.jpg' %}" alt="">
+                <h2 class="titulo2">COVID-19</h2>
+                <p class="fuenteCampañas">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in varius orci. Vestibulum ante ipsum primis in
+                faucibus orci luctus et ultrices posuere cubilia curae; Fusce 
+                vulputate mi orci, a tincidunt quam mattis vitae.</p>
+          </div>
+          <div  class="col-sm-4">
+                <img class="img-campaña" src="{% static 'Vacunasist/images/bacteria.jpg' %}" alt="">
+                <h2 class="titulo2">Fiebre amarilla</h2>
+                <p class="fuenteCampañas">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in varius orci. Vestibulum ante ipsum primis in
+                faucibus orci luctus et ultrices posuere cubilia curae; Fusce 
+                vulputate mi orci, a tincidunt quam mattis vitae.</p>
+          </div>
+        </div>
+      </div>  
+    </main>
+</body>
+
+    {% endblock %}

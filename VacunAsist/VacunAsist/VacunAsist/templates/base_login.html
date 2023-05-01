@@ -1,0 +1,206 @@
+<!doctype html> <!-- Cambiar a header una vez que con python se lo pueda poner en todas paginas-->
+<html lang="es">
+  
+  <head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+
+    
+    <!-- Bootstrap CSS -->
+    <script src="https://kit.fontawesome.com/61ff68e988.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'Vacunasist/css/Estilo.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+    <link href="{% static 'Vacunasist/bootstrap/bootstrap-5.1.3-examples/assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script>
+      $(document).ready(function(){
+          function alignModal(){
+              var modalDialog = $(this).find(".modal-dialog");
+              
+              // Applying the top margin on modal to align it vertically center
+              modalDialog.css("margin-top", Math.max(0, ($(window).height() - modalDialog.height()) / 2));
+          }
+          // Align modal when it is displayed
+          $(".modal").on("shown.bs.modal", alignModal);
+          
+          // Align modal when user resize the window
+          $(window).on("resize", function(){
+              $(".modal:visible").each(alignModal);
+          });   
+      });
+      </script>
+
+    <title>
+      VacunAssist
+    </title>
+    <link rel="shortcut icon" href="{% static 'Vacunasist/images/Logo.png' %}"> <!-- pedirle a lucho que haga un logo chiquito para el head que sea solo el botiquin -->
+  </head>
+  
+  <body> 
+    <header>
+      <div>
+        <a class="logo" href="{% url 'Home' %}">
+          <img class="img" src="{% static 'Vacunasist/images/Logo.png' %}">
+        </a>
+      </div>
+      <div class="dropdown" style="margin: 40px; margin-left: 0px;">
+        <button onclick="myFunction()" class="dropbtn"><i {% if user.rol_actual == "Ciudadano" %} class="fa-solid fa-user" {% endif %} {% if user.rol_actual == "Vacunador" %} class="fa-solid fa-user-doctor" {% endif %} {% if user.rol_actual == "Administrador" %} class="fa-solid fa-user-tie" {% endif %}  style="margin-right: 3%"></i> {{ request.user.nombre_apellido }}<i class="fa-solid fa-sort-down" style="margin-left: 3%;"></i></button>
+        <div id="myDropdown" class="dropdown-content">
+          {% if user.rol_actual == "Ciudadano" %}
+          <a href="{% url 'MiPerfil' %}"><i class="fa-solid fa-pen-to-square" style="margin-right: 5%"></i>Mi perfil</a>          
+          <a href="{% url 'MisTurnos' %}"><i class="fa-solid fa-calendar-check" style="margin-right: 5%"></i>Mis turnos</a>
+          <a href="{% url 'MisVacunas' %}"><i class="fa-solid fa-syringe" style="margin-right: 5%"></i>Mis vacunas</a>
+          <a href="{% url 'Logout' %}"><i class="fa-solid fa-right-from-bracket" style="margin-right: 5%"></i>Cerrar sesión</a>
+          {% endif %}
+          {% if user.rol_actual == "Vacunador" %}
+          <a class="dropdown-item" href="{% url 'TurnosHoy' %}"><i class="fa-solid fa-calendar-day" style="margin-right: 5%"></i>Ver turnos del día</a>
+          <a class="dropdown-item" href="{% url 'VacunasVac' %}"><i class="fa-solid fa-vial-circle-check" ></i>Ver stock de vacunas</a>
+          <a href="{% url 'Logout' %}"><i class="fa-solid fa-right-from-bracket" style="margin-right: 5%"></i>Cerrar sesión</a>
+          {% endif %}
+          {% if user.rol_actual == "Administrador" %}
+          <a class="dropdown-item" href="{% url 'VacunasStock' %}"><i class="fa-solid fa-vial-circle-check" style="margin-right: 5%"></i>Ver stock de vacunas</a>
+          <a class="dropdown-item" href="{% url 'visualizar_turnos' %}"><i class="fa-solid fa-calendar-day" style="margin-right: 5%"></i>Ver cantidad de turnos</a>
+          <a class="dropdown-item" href="{% url 'GestionarUsuarios' %}"><i class="fa-solid fa-users" style="margin-right: 5%"></i>Gestionar roles</a>
+          <a class="dropdown-item" href="{% url 'VerEstadisticas' %}"><i class="fa-solid fa-chart-line" style="margin-right: 5%"></i>Ver estadisticas</a>
+          <a href="{% url 'Logout' %}"><i class="fa-solid fa-right-from-bracket" style="margin-right: 5%"></i>Cerrar sesión</a>
+          {% endif %}
+        </div>
+      </div>     
+          <div class="dropdown " style="margin: 40px; margin-right: 0  px; ">
+            <button onclick="myFunction2()" class="dropbtn"> {{ user.rol_actual }}  <i class="fa-solid" id="rol_flecha" style="margin-left: 3%;"></i></button> <div id="myDropdown2" class="dropdown-content">
+            <form action="{% url 'cambiarRol' %}" method="POST">{% csrf_token %}
+            <input type="text" hidden value="" name="rol" id="rol">
+            {% if user.rol_actual != "Ciudadano" %}
+              <button type="button" class="dropdown-item" style="text-align: center; padding-top: 10px; padding-bottom: 10px ; " value="Ciudadano" onclick=functionRol(this)>Ciudadano</button>
+            {% endif %}
+            {% if user.es_vacunador %}
+              {% if user.rol_actual != "Vacunador" %}
+              <button type="button" class="dropdown-item" style="text-align: center; padding-top: 10px; padding-bottom: 10px ; " value="Vacunador" onclick=functionRol(this)>Vacunador</button>
+              {% endif %}
+            {% endif %}
+              {% if user.es_administrador %}
+                {% if user.rol_actual != "Administrador" %}
+                <button type="button" class="dropdown-item" style="text-align: center; padding-top: 10px; padding-bottom: 10px ; " value="Administrador" onclick=functionRol(this)>Administrador</button>
+                {% endif %}
+              {% endif %}
+            </form>  
+            </div>
+          </div> 
+    </form>   
+    </header>
+    <div class="container-fluid">
+      <div class="row align-items-start mydiv">     
+        <div class="col-3"  onclick="location.href='{% url 'Home' %}';" style="cursor: pointer; color:white; font-weight:600;">
+          Home
+        </div>
+        <div class="col-3" onclick="location.href='';" style="cursor: pointer; color:white; font-weight:600;">
+          Nosotros
+        </div>
+        <div class="col-3" onclick="location.href='';" style="cursor: pointer; color:white; font-weight:600;">
+          Ayuda
+        </div>
+        <div class="col-3" onclick="location.href='';" style="cursor: pointer; color:white; font-weight:600;">
+          Contacto
+        </div>
+      </div>
+    </div>
+
+    {% block content %}
+
+    {% endblock %}
+
+  </body>
+
+  <script type="text/javascript" language="JavaScript">
+    let rol = document.getElementById("rol_flecha");
+    let v1 = "{{user.es_vacunador}}";
+    let v2 = "{{user.es_administrador}}";
+    if(v1 == "True" || v2 == "True"){
+      rol.setAttribute("class", "fa-solid fa-sort-down")
+    }
+  </script>
+
+  <script>
+    /* When the user clicks on the button, 
+    toggle between hiding and showing the dropdown content */
+    
+
+    function myFunctionVac() {
+      document.getElementById("myDropdownVac").classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtnVac')) {
+        var dropdowns = document.getElementsByClassName("dropdown-contentVac");
+        var i;     
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+    </script>
+    <script>
+    function myFunction() {
+      document.getElementById("myDropdown").classList.toggle("show");
+    }
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+
+    function myFunction2() {
+      document.getElementById("myDropdown2").classList.toggle("show");
+    }
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+    </script>
+
+<script>
+  function functionRol(eve){
+    var boton = eve.value;
+    elemento = document.getElementById("rol");
+    if (boton == "Ciudadano"){
+      
+      elemento.setAttribute('value', "Ciudadano");
+      
+    }
+    if (boton == "Vacunador"){
+      
+      elemento.setAttribute('value', "Vacunador");
+      
+    } 
+    if (boton == "Administrador"){
+      
+      elemento.setAttribute('value', "Administrador"); 
+      
+    }
+    eve.setAttribute('type', "submit");
+    eve.click();
+  }
+</script>
+</html>

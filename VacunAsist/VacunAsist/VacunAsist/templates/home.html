@@ -1,0 +1,124 @@
+{% extends "base_login.html" %}
+ {% load static %}
+
+ {% block title %} VacunAssist
+ {% endblock %}
+
+
+ {% block content %}
+<body class="no_user">
+  <main class="fondo " >
+    
+      <!-- Button trigger modal -->
+      {% if mensaje != "" %}
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">{{titulo}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                {{ mensaje }}
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}      
+        <div class="layer " style="min-height: 82vh">
+        <div class="infoPrincipal" >
+          <p class="container-fluid " style="background-color: #A2CB83 ;border: 5px solid #3b6e22; justify-content: center;align-items: center; min-height:100px;font-size: 45px; text-align: center; color: white;"><strong><span style="vertical-align: middle;"  >Campañas</span> </strong></p>
+          <!--<h1 class="titulo">Campañas</h1>-->
+          <p class="fuenteCampañas" style="margin-top: 20px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Vestibulum in varius orci. Vestibulum ante ipsum primis in faucibus orci luctus et 
+            ultrices posuere cubilia curae; Fusce vulputate mi orci, a tincidunt quam mattis vitae. Etiam ac sollicitudin
+            justo. Sed vel posuere mauris. Ut nisi odio, feugiat quis est sed, viverra consequat ipsum. Donec est sem, blandit
+              et magna nec, pulvinar placerat ex. Donec consectetur id leo non dapibus.</p>
+       <div class="container-fluid">
+        <div class="row " >
+            <div class="col-sm-4 ">
+                <img class="img-campaña" src="{% static 'Vacunasist/images/bacteria.jpg' %}" alt="">
+                <h2 class="titulo2">Gripe</h2>
+                <p class="fuenteCampañas">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in varius orci. Vestibulum ante ipsum primis in
+                faucibus orci luctus et ultrices posuere cubilia curae; Fusce
+                vulputate mi orci, a tincidunt quam mattis vitae.</p>
+                {% if gripe == "No" %}
+                <form action="/inscribir_campania_gripe/" method="POST">{% csrf_token %}
+                    <input type="submit" class="button2" value="Inscribir campaña Gripe">
+                </form>
+                {% else %}
+                <form action="/baja_campania/"  method="POST">{% csrf_token %}
+                  <input type="text" name="tipo" id="gripe" value="Gripe" hidden>
+                  <button type="button" class="button2" value="Gripe" onclick="functionBoton(this)" style="background-color: rgb(139, 0, 0); box-shadow:inset 0px 34px 0px -15px  rgb(180, 67, 67);border:1px solid rgb(110, 8, 8)">Cancelar</button>
+                </form>
+              {% endif %}
+            </div>
+          <div  class="col-sm-4">
+                <img class="img-campaña" src="{% static 'Vacunasist/images/bacteria.jpg' %}" alt="">
+                <h2 class="titulo2">COVID-19</h2>
+                <p class="fuenteCampañas">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in varius orci. Vestibulum ante ipsum primis in
+                faucibus orci luctus et ultrices posuere cubilia curae; Fusce 
+                vulputate mi orci, a tincidunt quam mattis vitae.</p>
+                {% if covid == "No" %}
+                <form action="/inscribir_campania_COVID/" method="POST">{% csrf_token %}
+                    <input type="submit" value="Inscribir campaña COVID-19" class="button2" >
+                </form>
+                {% else %}
+                <form action="/baja_campania/" method="POST">{% csrf_token %}
+                  <input type="text" name="tipo" id="covid" value="COVID-19" hidden>
+                  <button type="button" value="COVID-19" class="button2" onclick="functionBoton(this)" style="background-color: rgb(139, 0, 0); box-shadow:inset 0px 34px 0px -15px  rgb(180, 67, 67);border:1px solid rgb(110, 8, 8)">Cancelar</button>
+                </form>
+              {% endif %}
+          </div>
+          <div  class="col-sm-4">
+                <img class="img-campaña" src="{% static 'Vacunasist/images/bacteria.jpg' %}" alt="">
+                <h2 class="titulo2">Fiebre amarilla</h2>
+                <p class="fuenteCampañas">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum in varius orci. Vestibulum ante ipsum primis in
+                faucibus orci luctus et ultrices posuere cubilia curae; Fusce 
+                vulputate mi orci, a tincidunt quam mattis vitae.</p>
+                {% if vacuna_fa == "Si" %}
+                  <form action="/imprimir_certificado/" method="POST">{% csrf_token %}
+                    <input type="submit" value="Descargar certificado" class="button2" style="background-color:rgb(146, 146, 58);box-shadow:inset 0px 34px 0px -15px rgb(185, 174, 73); border:1px solid rgb(218, 184, 100)">
+                  </form>
+                {% else %}
+                  {% if fiebre_amarilla == "No" %}
+                  <form action="/inscribir_campania_fiebre_amarilla/" method="POST">{% csrf_token %}
+                      <input type="submit" value="Inscribir campaña Fiebre amarilla" class="button2" >
+                  </form>
+                  {% else %}
+                  <form action="/baja_campania/"  method="POST">{% csrf_token %}
+                    <input type="text" name="tipo" id="Fa" value="Fiebre_amarilla" hidden>
+                    <button type="button" value="Fiebre_amarilla" class="button2" onclick="functionBoton(this)" style="background-color: rgb(139, 0, 0); box-shadow: inset 0px 34px 0px -15px  rgb(180, 67, 67); border:1px solid rgb(110, 8, 8)">Cancelar</button>
+                  </form>
+                {% endif %}
+              {% endif %}
+              <br><br>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div> 
+  </main>
+    <script type="text/javascript" language="JavaScript">
+    let myModal = new bootstrap.Modal(document.getElementById('exampleModalCenter'), {});
+    myModal.show();
+    </script>
+  <script>
+    function functionBoton(eve){
+      boton = eve.value;
+      elemento = document.getElementById("formularioBotones");
+
+      eve.setAttribute('type', "submit");
+      eve.click();
+    }
+  </script>
+</body>
+    {% endblock %}
+

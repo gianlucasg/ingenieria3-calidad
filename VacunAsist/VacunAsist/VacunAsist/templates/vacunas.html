@@ -1,0 +1,102 @@
+{% extends "base_login.html" %}
+ {% load static %}
+ {% block content %}
+<body class="user">
+
+<div style="height: 10%;"></div>
+
+<div class="container">
+  <h1 style="text-align: center; margin-right: 90pt;"> Vacunatorio: {{user.vacunador.vacunatorio_de_trabajo}}</h1>
+  <br>
+  <div class="row">
+    {% for vacuna in vacunas %}
+    <div class="col-3">
+      <p style="font-size: 18pt; font-weight: 600;">{{vacuna.vacuna.tipo}}</p>
+      <p style="font-size: 14pt; font-weight: 400;">Stock disponible: {{vacuna.stock_remanente}}</p>
+    </div>
+    <div class="col-1" style="background-color: transparent;"></div>
+    {% endfor %}
+</div>
+
+<form action="/eliminar_vacuna_stock/" method="POST" id="edit_form">{% csrf_token %}
+  <div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center" style="background: #a2cb83d8;">
+          <h4 class="modal-title w-100 font-weight-bold">Cargar vacuna</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+
+          <div class="md-form mb-4">
+            
+            <label data-error="wrong" data-success="right" for="defaultForm-pass">Tipo</label>
+            <input  id="TipoE" name="Tipo" class="form-control validate" readonly>
+
+          </div>
+      
+            <div class="md-form mb-4">
+              
+              <label data-error="wrong" data-success="right" for="defaultForm-email">Cantidad</label>
+              <input  id="cantidad" name="Cantidad" type="number" class="form-control validate" required>
+              
+            </div>
+
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="submit" class="button2 btn-default" style=" background-color: rgb(189, 0, 0); box-shadow:inset 0px 34px 0px -15px  rgb(180, 67, 67); min-width: 100%;">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="/cargar_vacuna_stock/" method="POST" id="edit_form">{% csrf_token %}
+  <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center" style="background: #a2cb83d8;">
+          <h4 class="modal-title w-100 font-weight-bold">Cargar vacuna</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+
+          <div class="md-form mb-4">
+            
+            <label data-error="wrong" data-success="right" for="defaultForm-pass">Tipo</label>
+            <input  id="Tipo" name="Tipo" class="form-control validate" readonly>
+
+          </div>
+      
+            <div class="md-form mb-4">
+              
+              <label data-error="wrong" data-success="right" for="defaultForm-email">Cantidad</label>
+              <input  id="cantidad" name="Cantidad" type="number" class="form-control validate" required>
+              
+            </div>
+
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="submit" class="button2 btn-default" style="min-width: 100%;">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+
+
+
+  
+</script>
+
+</body>
+
+{% endblock %}

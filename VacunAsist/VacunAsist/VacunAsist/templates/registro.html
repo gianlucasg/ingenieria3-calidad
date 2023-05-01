@@ -1,0 +1,82 @@
+{% extends "HeaderBaseNoLog.html" %}
+{% load static %}
+
+{% block title %} VacunAssist
+{% endblock %}
+
+
+{% block content %}
+
+<main class="no_user">
+<div class="layer">
+    <div class="container">
+        <div class="row" style="align-content: center; background-color: transparent;">
+        <div class="col-lg-7 offset-lg-2 col-md-2 offset-md-2
+        col-10" style="background-color:rgba(255, 255, 255, 0.80);">
+            <div class="card-heade card card-outline-secondaryr" style="background: #A2CB83;">
+                    <h3 class="mb-1" style="text-align: center;">Registro</h3>
+            </div>
+            <div style="padding: 3%; background-color: transparent;">
+                <form action="#" class="form-horizontal" method="post">{% csrf_token %}
+                    <div style="text-align: center;">
+                        {% for field in registration_form %}
+                            {% if field.name != "" %}
+                                <div class="field-wrapper">
+                                    <div class="label-wrapper"> 
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="required">*</span>{% endif %}
+                                        {% if field.help_text != "" %}
+                                            <i class="fa-solid fa-circle-info" title="{{ field.help_text }}"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="value-wrapper">
+                                        {{ field }}
+                                        {{ field.errors }}
+                                    </div>
+                                    {% if field.field.label_suffix == "contraseña" %}
+                                        <div class="pass-icon">
+                                            <i class="bi bi-eye-slash-fill" style="cursor:pointer;" id="toggle{{ field.name }}"></i>
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                                <p></p>
+                            {% endif %}
+                        {% endfor %}
+                        <!--Basicamente esto dice que si hay errores, que los muestre-->
+        
+                        {% if registration_form.non_field_errors %}
+                        <div style="color: rgb(105, 0, 0)"> <br>
+                            <p>{{registration_form.non_field_errors}}</p>
+                        </div>
+
+                        {% endif %}
+                        <br>
+                        <p>
+                            Se enviará su clave alfanumérica vía mail. Esta es necesaria para iniciar sesión.
+                        </p>
+                        <button type="submit" style=" min-width:100%; color:white; font-weight:600; background: #A2CB83; border-color: #3b6e22; float:right;" class="btn btn-primary btn-lg float-right">Registrarse</button>
+                    </div>
+                </form>
+            </div>
+        </div></div>
+    </div>
+</div>
+<script>
+    const togglePassword = document.querySelector("#togglepassword1");
+    const password1 = document.querySelector("#id_password1");
+    const password2 = document.querySelector("#id_password2");
+
+    togglePassword.addEventListener("click", function () {
+        // toggle the type attribute
+        const type = password1.getAttribute("type") === "password" ? "text" : "password";
+        password1.setAttribute("type", type);
+        password2.setAttribute("type", type);
+        
+        // toggle the icon
+        this.classList.toggle("bi-eye")
+    });
+</script>
+</main>
+
+{% endblock %}

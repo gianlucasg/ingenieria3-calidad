@@ -1,0 +1,383 @@
+{% extends "base_login.html" %}
+ {% load static %}
+ {% block content %}
+ <style>
+  .filterDiv {
+    float: left;
+    background-color: #2196F3;
+
+    text-align: center;
+    margin: 2px;
+    display: none;
+  }
+  
+  .show {
+    display: block;
+  }
+  
+  
+  /* Style the buttons */
+  .btn {
+    font-size: 16pt;
+    background-color: #A2CB83;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #ddd;
+  }
+  
+  .btn.active {
+    background-color: #aacc6c;
+    color: white;
+  }
+  </style>
+<body class="user">
+<div class="container">
+<div id="myBtnContainer" style="text-align:center; padding-top: 2%;">
+    <button class="btn active" onclick="cambiarRol('Admin')" >Gestionar Administradores</button>
+    <button class="btn" onclick="cambiarRol('Vac')" >Gestionar Vacunadores</button>
+</div>
+
+<form action="" hidden method="POST" id="formularioConDNI">{% csrf_token %}
+              <input id="dni" name="Dni" class="form-control validate">
+            <button type="submit" id="boton" class="button2 btn-default" style="min-width: 100%;"></button>
+</form>
+
+
+<div class="container-sm" style="float: left; padding-left: 5%; padding-top: 4%;" id="ventana_admin">
+    <div class="" style="height: 100%; background-color: #fff;">
+      <div class="container" style = "float: left; margin-bottom: 2%;">
+        <div class="col-12"><p  style="background-color: white; float: left; font-size: 18pt;"><strong>Administradores</strong></p></div>
+        <form method="post" action="">{% csrf_token %}
+                    <div class="col-2" style="float:right; padding: 0px;"><button class="button2" style="border-color: transparent;" onclick=cargarModalAlta(this) type="button" value="Administrador">Dar de alta</button></div>
+          <div class="col-2"style="float:right;  padding: 0px;"><button class="button2" name="limpiar_admin" id="limpiar_dni_adm" style="border-color: transparent;" onclick=myFunction3(this) type="button" value="Admin">Limpiar</button></div>
+          <div class="col-2" style="float:right; padding: 0px;"><button class="button2" name="buscar_admin" id="buscar_dni_adm" style="border-color: transparent;" onclick=myFunction3(this) type="button" value="Admin">Buscar</button></div>
+          <div class="col-4" style="float:right; padding: 0px;"><input style="border: 1px solid #ccc; border-radius: 4px; width: 90%; padding: 8px 15px; margin: 6px 0px;" type="text"  name="Dni" id="myInputAdmin"  minlenght="7" maxlength="8" placeholder="Ingrese un DNI"></div>
+        </form>
+    </div>
+        <table class="table table-hover" id="myTableAdmin" style="border: 1px solid black;">
+            <thead class="table-secondary">
+            <tr style="vertical-align:middle; font-size: 14pt;">
+                <th scope="col">DNI</th>
+                <th scope="col">Nombre y apellido</th>
+                <th scope="col">Email</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody style="overflow: scroll;">
+            {% for admin in admins %}
+            <tr style="vertical-align:middle;">
+                <td class="dni_t">{{admin.dni}}</td>
+                <td class="row_b">{{admin.nombre_apellido}}</td>
+                <td class="tipo_t">{{admin.email}}</td>
+                <td class="edit_row"><button class="button2" style="font-size: 12pt; padding: 4px 8px;">Dar de baja</button></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="container-sm" hidden style="float: left; padding-left: 5%; padding-top: 4%;" id="ventana_vac">
+    <div class="" style="height: 100%; background-color: #fff;">
+      <div class="container " style = "float: left; margin-bottom: 2%;">
+        <div class="col-12"><p  style="background-color: white; float: left; font-size: 18pt;"><strong>Vacunadores</strong></p></div>
+        <form method="post" action="">{% csrf_token %}
+          <div class="col-2" style="float:right; padding: 0px;  "><button class="button2" style="border-color: transparent;" onclick=cargarModalAlta(this) type="button" value="Vacunador">Dar de alta</button></div>
+          <div class="col-2"style="float:right; padding: 0px; "><button class="button2" name="limpiar_dni" id="limpiar_dni_vac" style="border-color: transparent;" onclick=myFunction3(this) type="button" value="Vac">Limpiar</button></div>
+          <div class="col-2" style="float:right; padding: 0px;  "><button class="button2" name="buscar_dni" id="buscar_dni_vac" style="border-color: transparent;" onclick=myFunction3(this) type="button" value="Vac">Buscar</button></div>
+          <div class="col-4" style="float:right;padding: 0px;"><input style="border: 1px solid #ccc; border-radius: 4px; width: 90%; padding: 8px 15px; margin: 6px 0;" type="text" name="Dni" id="myInputVac"  minlenght="7" maxlength="8" placeholder="Ingrese un DNI"></div>
+        </form>
+      </div>
+        <table class="table table-hover" id="myTableVac" style="border: 1px solid black;">
+            <thead class="table-secondary">
+            <tr style="vertical-align:middle; font-size: 14pt;">
+                <th scope="col">DNI</th>
+                <th scope="col">Nombre y apellido</th>
+                <th scope="col">Email</th>
+                <th scope="col">Vacunatorio de trabajo</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody style="overflow: scroll;">
+            {% for vacunador in vacunadores %}
+            <tr style="vertical-align:middle;">
+                <td class="dni_t">{{vacunador.dni}}</td>
+                <td class="row_b">{{vacunador.nombre_apellido}}</td>
+                <td class="row_c">{{vacunador.email}}</td>
+                <td class="vac_t">{{vacunador.vacunador.vacunatorio_de_trabajo.nombre}}</td>
+                <td class="edit_row_1"><button class="button2" style="font-size: 12pt; padding: 4px 8px;">Cambiar vacunatorio</button></td>
+                <td class="edit_row_2"><button class="button2" style="font-size: 12pt; padding: 4px 8px;">Dar de baja</button></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<form action="" method="POST" id="formularioAlta">{% csrf_token %}
+  <div class="modal fade" id="modalAlta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center" style="background: #a2cb83d8;">
+          <h4 class="modal-title w-100 font-weight-bold" id="tituloModalAlta">Dar de alta</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+
+          <div class="md-form mb-4">
+            
+            <label data-error="wrong" data-success="right" for="defaultForm-pass">DNI</label>
+            <input id="dni" name="Dni" maxlength="8" minlength="7" class="form-control validate" required>
+          </div> 
+
+          <div class="md-form mb-4" hidden id="campoVacunatorioTrabajo">           
+            <label data-error="wrong" data-success="right" for="defaultForm-pass">Vacunatorio de trabajo</label>
+            <select id="VacunatorioTrabajo" name="VacunatorioTrabajo" class="form-select validate">
+                {% for vacunatorio in vacunatorios %}
+                <option id="{{ vacunatorio }}" value="{{ vacunatorio.nombre }}">{{ vacunatorio.nombre }}</option>
+                {% endfor %}
+            </select>
+          </div> 
+
+          
+
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="submit" id="botonAlta"  onclick=darDeAlta() class="button2 btn-default" style="min-width: 100%;">Dar de alta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="{% url 'CambiarVacDeTrabajo' %}" method="POST" id="formularioCambioDeVac">{% csrf_token %}
+    <div class="modal fade" id="modalCambio" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center" style="background: #a2cb83d8;">
+            <h4 class="modal-title w-100 font-weight-bold" id="tituloModalAlta">Cambiar vacunatorio de trabajo</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="modal-body mx-3">
+  
+            <div class="md-form mb-4">
+              
+              <label data-error="wrong" data-success="right" for="defaultForm-pass">DNI</label>
+              <input id="dni_vac" name="Dni" class="form-control validate" required readonly>
+            </div> 
+
+            <div class="md-form mb-4">
+              
+                <label data-error="wrong" data-success="right" for="defaultForm-pass">Antiguo vacunatorio de trabajo: </label>
+                <input id="vac_trabajo" class="form-control validate" required readonly>
+              </div> 
+  
+            <div class="md-form mb-4">           
+              <label data-error="wrong" data-success="right" for="defaultForm-pass">Nuevo vacunatorio de trabajo</label>
+              <select  name="Vacunatorio" class="form-select validate">
+                  {% for vacunatorio in vacunatorios %}
+                  <option id="{{ vacunatorio }}" value="{{ vacunatorio.nombre }}">{{ vacunatorio.nombre }}</option>
+                  {% endfor %}
+              </select>
+            </div> 
+  
+            
+  
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="submit" id="cambiarVacunatorio" class="button2 btn-default" style="min-width: 100%;">Cambiar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+{% if mensaje != "" %}
+{% if mensaje != None %}
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{ mensaje }}
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+<script type="text/javascript" language="JavaScript">
+    let myModal = new bootstrap.Modal(document.getElementById('exampleModalCenter'), {});
+    myModal.show();
+</script>
+{% endif %}
+{% endif %}
+
+{% if rol != "" %}
+<script type="text/javascript" language="JavaScript">
+        let ventanaAdm = document.getElementById("ventana_admin")
+        let ventanaVac = document.getElementById("ventana_vac")
+        ventanaAdm.hidden = true
+        ventanaVac.hidden = false
+
+</script>
+{% endif %}
+<script>
+    var edit_row = document.querySelectorAll('#myTableVac .edit_row_1');
+    for(var i=0; i<edit_row.length; i++) {
+      edit_row[i].addEventListener('click', function(e){
+        // get parent row, add data from its cells in form fields
+        var tr_parent = this.parentNode;
+        document.getElementById('dni_vac').value = tr_parent.querySelector('.dni_t').innerHTML;
+        document.getElementById("vac_trabajo").value = tr_parent.querySelector('.vac_t').innerHTML;
+
+        $("#modalCambio").modal();
+        document.getElementById('dni_vac').focus();
+
+      }, false);
+
+    }
+  
+</script>
+
+
+
+
+<script>
+  var btnContainer = document.getElementById("myBtnContainer");
+  var btns = btnContainer.getElementsByClassName("btn");
+  for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+<script>
+    var edit_row = document.querySelectorAll('#myTableAdmin .edit_row');
+    for(var i=0; i<edit_row.length; i++) {
+      edit_row[i].addEventListener('click', function(e){
+        // get parent row, add data from its cells in form fields
+        var tr_parent = this.parentNode;
+        document.getElementById('dni').value = tr_parent.querySelector('.dni_t').innerHTML;
+        document.getElementById("formularioConDNI").setAttribute("action", "{% url 'DarDeBajaAdmin' %}");
+        document.getElementById("boton").click();
+
+      }, false);
+
+    }
+  
+</script>
+
+
+
+<script>
+    var edit_row = document.querySelectorAll('#myTableVac .edit_row_2');
+    for(var i=0; i<edit_row.length; i++) {
+      edit_row[i].addEventListener('click', function(e){
+        // get parent row
+        var tr_parent = this.parentNode;
+        document.getElementById('dni').value = tr_parent.querySelector('.dni_t').innerHTML;
+        document.getElementById("formularioConDNI").setAttribute("action", "{% url 'DarDeBajaVac' %}");
+        document.getElementById("boton").click();
+      }, false);
+
+    }
+  
+</script>
+
+
+<script>
+
+  function myFunction3(eve) {
+    // Declare variables
+    var input, filter, table, tr, td, i, txtValue, id,  ventana;
+    ventana = eve.value;
+    input = document.getElementById(`myInput${ventana}`);
+    filter = input.value.toUpperCase();
+    table = document.getElementById(`myTable${ventana}`);
+    tr = table.getElementsByTagName("tr");
+    id = eve.id
+    if (id === "limpiar_dni_vac" || id === "limpiar_dni_adm") {
+        filter = null;
+        input.value = "";
+    }
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        if (filter != ""){
+        txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().trim() === filter || filter == null) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "None";
+          }
+      }
+      }
+    }
+  }
+
+</script>
+
+
+<script>
+    function cargarModalAlta(boton){
+        var tipo, titulo, form, campo, selector;
+        tipo = boton.value;
+        titulo = document.getElementById("tituloModalAlta");
+        form = document.getElementById("formularioAlta");
+        campo = document.getElementById("campoVacunatorioTrabajo");
+        selector = document.getElementById("VacunatorioTrabajo");
+        titulo.textContent=`Dar de Alta ${tipo}`;
+        if (tipo == "" || tipo == "Administrador"){
+            form.setAttribute('action', "{% url 'DarDeAltaAdmin' %}");
+            campo.hidden = true;
+            selector.required = false;
+            
+        }
+        if (tipo == "Vacunador"){
+            form.setAttribute('action', "{% url 'DarDeAltaVac' %}");
+            campo.hidden = false;
+            selector.required = true;
+        }
+        let myModal = new bootstrap.Modal(document.getElementById('modalAlta'), {});
+        myModal.show();
+    }
+</script>
+
+<script>
+    function cambiarRol(valor){
+        
+        if (valor == "Admin"){
+            let ventanaAdm = document.getElementById("ventana_admin")
+            let ventanaVac = document.getElementById("ventana_vac")
+            ventanaAdm.hidden = false
+            ventanaVac.hidden = true
+        } else {
+            let ventanaAdm = document.getElementById("ventana_admin")
+            let ventanaVac = document.getElementById("ventana_vac")
+            ventanaAdm.hidden = true
+            ventanaVac.hidden = false
+
+        }
+    }
+</script>
+{% endblock %}

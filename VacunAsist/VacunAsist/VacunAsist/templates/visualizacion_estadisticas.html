@@ -1,0 +1,194 @@
+{% extends "base_login.html" %}
+ {% load static %}
+ {% block content %}
+
+
+ <style>
+  .filterDiv {
+    float: left;
+    background-color: #2196F3;
+
+    text-align: center;
+    margin: 2px;
+    display: none;
+  }
+  
+  .show {
+    display: block;
+  }
+  
+  
+  /* Style the buttons */
+  .btn {
+    font-size: 16pt;
+    background-color: #A2CB83;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #ddd;
+  }
+  
+  .btn.active {
+    background-color: #aacc6c;
+    color: white;
+  }
+  </style>
+
+<body class="user">
+<div class="container">
+  
+    <div class="container " style = " text-align: center;">
+        <div ><p  style="background-color: white; font-size: 22pt;"><strong>Estadisticas</strong></p></div>
+    </div>
+    <div id="myBtnContainer" style="text-align:center; padding-top: 2%;">
+      <h3>Seleccione que desea ver</h3>
+      <button class="btn active" onclick="cambiarGrafico('Polideportivo')">Polideportivo</button>
+      <button class="btn" onclick="cambiarGrafico('Corralon')">Corralon Municipal</button>
+      <button class="btn" onclick="cambiarGrafico('Hospital')">Hospital 9 de Julio</button>
+      <button class="btn" onclick="cambiarGrafico('Total')">Total por vacuna</button>
+      <button class="btn" onclick="cambiarGrafico('Porcentaje')">Porcentaje</button>
+  </div>
+  <br>
+  <div class="container" style="float: left; text-align: left"><h3 style="margin-right: 17%;">Ingrese las fechas que desea ver:</h3> 
+    <form method="get" action="#">{% csrf_token %}
+    <div class="" style="align-items: center;">
+      <div class="col-2" style="float:right"><button class="button2" name="buscar_dni" id="buscar_dni" style="border-color: transparent;margin-top: 10px;" type="submit">Mostrar</button></div>
+      <div class="col-2" style="float:right;"><p style="float: left;">Fecha de fin:</p><input style="border: 1px solid gray; float: left;;" type="date" name="Fecha_fin" id="myInput2"   placeholder="Fecha final"></div>
+      <div class="col-2" style="float:right"><p style="float: left;">Fecha de inicio:</p><input style="border: 1px solid gray; float: left;;" type="date" name="Fecha_ini" id="myInput1"  placeholder="Fecha inicial"></div>
+    </form>
+    </div>
+   </div>  
+  </div>
+</div><br><br><br><br><br>
+
+<div class="container" >
+<div class="container-sm" style="float: left;" id="ventana_poli">
+    {% if grafico_poli %}
+    <div style="width:60%">
+    {{ grafico_poli|safe }}
+    </div>
+    {% endif %}
+</div>
+
+<div class="container-sm" hidden style="float: left;" id="ventana_corr">
+    {% if grafico_corr %}
+    <div style="width:60%">
+    {{ grafico_corr|safe }}
+    </div>
+    {% endif %}
+</div>
+<div class="container-sm" hidden style="float: left;" id="ventana_hosp">
+    {% if grafico_hosp %}
+    <div style="width:60%">
+    {{ grafico_hosp|safe }}
+    </div>
+    {% endif %}
+</div>
+<div class="container-sm" hidden style="float: left;" id="ventana_total">
+  {% if grafico_vacuna %}
+  <div style="width:60%">
+  {{ grafico_vacuna|safe }}
+  </div>
+  {% endif %}
+</div>
+<div class="container-sm" hidden style="float: left;" id="ventana_porcentaje">
+    {% if grafico_total %}
+    <div style="width:60%">
+    {{ grafico_total|safe }}
+    </div>
+    {% endif %}
+  </div>
+</div>
+    {% if mensaje != "" %}
+    {% if mensaje != None %}
+    <div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              {{ mensaje }}
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+    <script type="text/javascript" language="JavaScript">
+        let myModal = new bootstrap.Modal(document.getElementById('exampleModalCenter1'), {});
+        myModal.show();
+    </script>
+    {% endif %}
+    {% endif %}
+
+    <script>
+      function cambiarGrafico(valor){
+        var ventanaCorr, ventanaPoli, ventanaHosp, ventanaTotal, ventanaPorcentaje;
+          ventanaPoli = document.getElementById("ventana_poli");
+          ventanaCorr = document.getElementById("ventana_corr");
+          ventanaHosp = document.getElementById("ventana_hosp");
+          ventanaTotal = document.getElementById("ventana_total");
+          ventanaPorcentaje = document.getElementById("ventana_porcentaje");
+          if (valor == "Polideportivo"){
+              ventanaPoli.hidden = false;
+              ventanaCorr.hidden = true;
+              ventanaHosp.hidden = true;
+              ventanaPorcentaje.hidden = true;
+              ventanaTotal.hidden = true;
+          }
+          if (valor == "Corralon"){
+              ventanaPoli.hidden = true;
+              ventanaCorr.hidden = false;
+              ventanaHosp.hidden = true;
+              ventanaPorcentaje.hidden = true;
+              ventanaTotal.hidden = true;
+  
+          }
+          if (valor == "Hospital"){
+              ventanaPoli.hidden = true;
+              ventanaCorr.hidden = true;
+              ventanaHosp.hidden = false;
+              ventanaPorcentaje.hidden = true;
+              ventanaTotal.hidden = true;
+          }
+          if (valor == "Total"){
+              ventanaPoli.hidden = true;
+              ventanaCorr.hidden = true;
+              ventanaHosp.hidden = true;
+              ventanaPorcentaje.hidden = true;
+              ventanaTotal.hidden = false;
+  
+          }
+          if (valor == "Porcentaje"){
+              ventanaPoli.hidden = true;
+              ventanaCorr.hidden = true;
+              ventanaHosp.hidden = true;
+              ventanaPorcentaje.hidden = false;
+              ventanaTotal.hidden = true;
+  
+          }
+      }
+  </script>
+
+<script>
+  var btnContainer = document.getElementById("myBtnContainer");
+  var btns = btnContainer.getElementsByClassName("btn");
+  for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+</body>
+
+{% endblock %}
