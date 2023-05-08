@@ -13,34 +13,34 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name='vacunavacunatorio',
-            old_name='stock_actual',
-            new_name='stock_remanente',
+            model_name = 'vacunavacunatorio',
+            old_name = 'stock_actual',
+            new_name = 'stock_remanente',
         ),
         migrations.AlterUniqueTogether(
-            name='inscripcion',
-            unique_together=set(),
+            name = 'inscripcion',
+            unique_together = set(),
         ),
         migrations.AddField(
-            model_name='vacunaaplicada',
-            name='vacunatorio',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.DO_NOTHING, to='gestion_de_usuarios.vacunatorio'),
+            model_name = 'vacunaaplicada',
+            name = 'vacunatorio',
+            field = models.ForeignKey(default = None, on_delete = django.db.models.deletion.DO_NOTHING, to = 'gestion_de_usuarios.vacunatorio'),
         ),
         migrations.AlterUniqueTogether(
-            name='vacunaaplicada',
-            unique_together={('usuario', 'vacuna')},
+            name = 'vacunaaplicada',
+            unique_together = {('usuario', 'vacuna')},
         ),
         migrations.CreateModel(
-            name='VacunasNoAplicadas',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+            name = 'VacunasNoAplicadas',
+            fields = [
+                ('id', models.BigAutoField(auto_created = True, primary_key = True, serialize = False, verbose_name = 'ID')),
                 ('fecha', models.DateField()),
-                ('estado', models.CharField(max_length=10)),
-                ('usuario', models.ForeignKey(db_constraint=False, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL)),
-                ('vacuna', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='gestion_de_usuarios.vacuna')),
-                ('vacunatorio', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='gestion_de_usuarios.vacunatorio')),
+                ('estado', models.CharField(max_length = 10)),
+                ('usuario', models.ForeignKey(db_constraint = False, on_delete = django.db.models.deletion.DO_NOTHING, to = settings.AUTH_USER_MODEL)),
+                ('vacuna', models.ForeignKey(on_delete = django.db.models.deletion.DO_NOTHING, to = 'gestion_de_usuarios.vacuna')),
+                ('vacunatorio', models.ForeignKey(on_delete = django.db.models.deletion.DO_NOTHING, to = 'gestion_de_usuarios.vacunatorio')),
             ],
-            options={
+            options = {
                 'verbose_name_plural': 'Vacunas_pospuestas',
             },
         ),
