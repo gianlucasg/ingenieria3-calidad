@@ -14,19 +14,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name = 'usuario',
             name = 'rol_actual',
-            field = models.CharField(choices = [('F', 'Femenino'),
-                                                ('M', 'Masculino')],
-                                                  default = None,
-                                                    max_length = 4),
+            field = models.CharField(
+                choices = [('F', 'Femenino'), ('M', 'Masculino')],
+                default = None,
+                max_length = 4),
         ),
         migrations.AlterField(
             model_name = 'vacuna',
             name = 'inscriptos',
-            field = models.ManyToManyField(blank = True, 
-                                default = None, 
-                                related_name = 'campañas_inscriptas', 
-                                through = 'gestion_de_usuarios.Inscripcion', 
-                                to = settings.AUTH_USER_MODEL),
+            field = models.ManyToManyField(
+                blank = True, 
+                default = None, 
+                related_name = 'campañas_inscriptas', 
+                through = 'gestion_de_usuarios.Inscripcion', 
+                to = settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name = 'vacuna',

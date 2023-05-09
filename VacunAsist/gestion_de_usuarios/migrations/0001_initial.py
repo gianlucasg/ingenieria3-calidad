@@ -15,27 +15,41 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name = 'Usuario',
             fields = [
-                ('dni', models.CharField(editable=False, max_length=8, primary_key=True, serialize=False)),
+                ('dni', models.CharField(
+                    editable = False, 
+                    max_length=8, 
+                    primary_key=True, 
+                    serialize=False)),
                 ('nombre_apellido', models.CharField(max_length=50)),
-                ('sexo', models.CharField(choices=[('F', 'Femenino'), ('M', 'Masculino')], max_length=1)),
+                ('sexo', models.CharField(
+                    choices = [('F', 'Femenino'), ('M', 'Masculino')], 
+                    max_length=1)),
                 ('email', models.EmailField(max_length=254)),
                 ('es_adm', models.BooleanField(default=False)),
                 ('fecha_nacimiento', models.DateField()),
                 ('contrasenia', models.CharField(max_length=30)),
-                ('clave_alfanumerica', models.CharField(max_length=5)),
+                ('clave_alfanumerica', models.CharField(max_length=5)), 
             ],
         ),
         migrations.CreateModel(
             name = 'Vacuna',
             fields = [
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True, 
+                    primary_key=True, 
+                    serialize=False, 
+                    verbose_name='ID')),
                 ('tipo', models.CharField(max_length=20)),
             ],
         ),
         migrations.CreateModel(
             name = 'Vacunatorio',
             fields = [
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True, 
+                    primary_key=True, 
+                    serialize=False, 
+                    verbose_name='ID')),
                 ('nombre', models.CharField(max_length=30)),
                 ('direccion', models.CharField(max_length=25)),
                 ('email', models.EmailField(max_length=254)),
@@ -45,45 +59,91 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name = 'VacunaVacunatorio',
             fields = [
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True, 
+                    primary_key=True, 
+                    serialize=False, 
+                    verbose_name='ID')),
                 ('stock_actual', models.PositiveIntegerField()),
-                ('vacuna', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacuna')),
-                ('vacunatorio', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacunatorio')),
+                ('vacuna', models.ForeignKey(
+                    on_delete=django.db.models.deletion.PROTECT, 
+                    to='gestion_de_usuarios.vacuna')),
+                ('vacunatorio', models.ForeignKey(
+                    on_delete=django.db.models.deletion.PROTECT, 
+                    to='gestion_de_usuarios.vacunatorio')),
             ],
         ),
         migrations.CreateModel(
             name = 'Vacunador',
             fields = [
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('usuario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gestion_de_usuarios.usuario', unique=True)),
-                ('vacunatorio_de_trabajo', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacunatorio')),
+                ('id', models.BigAutoField(
+                    auto_created=True, 
+                    primary_key=True, 
+                    serialize=False, 
+                    verbose_name='ID')),
+                ('usuario', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, 
+                    to='gestion_de_usuarios.usuario', 
+                    unique=True)),
+                ('vacunatorio_de_trabajo', models.ForeignKey(
+                    on_delete=django.db.models.deletion.PROTECT, 
+                    to='gestion_de_usuarios.vacunatorio')),
             ],
         ),
         migrations.CreateModel(
             name = 'VacunaAplicada',
             fields = [
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('fecha', models.DateField(default=datetime.date.today)),
-                ('marca', models.CharField(blank=True, max_length=20, null=True)),
-                ('lote', models.CharField(blank=True, max_length=20, null=True)),
+                ('id', models.BigAutoField(
+                    auto_created=True, 
+                    primary_key=True, 
+                    serialize=False, 
+                    verbose_name='ID')),
+                ('fecha', models.DateField(
+                    default=datetime.date.today)),
+                ('marca', models.CharField(
+                    blank=True, 
+                    max_length=20, 
+                    null=True)),
+                ('lote', models.CharField(
+                    blank=True, 
+                    max_length=20, 
+                    null=True)),
                 ('con_nosotros', models.BooleanField()),
-                ('usuario', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='gestion_de_usuarios.usuario')),
-                ('vacuna', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='gestion_de_usuarios.vacuna')),
+                ('usuario', models.ForeignKey(
+                    on_delete=django.db.models.deletion.DO_NOTHING, 
+                    to='gestion_de_usuarios.usuario')),
+                ('vacuna', models.ForeignKey(
+                    on_delete=django.db.models.deletion.DO_NOTHING, 
+                    to='gestion_de_usuarios.vacuna')),
             ],
         ),
         migrations.AddField(
             model_name = 'usuario',
             name = 'vacunatorio_pref',
-            field = models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gestion_de_usuarios.vacunatorio'),
+            field = models.ForeignKey(
+                null=True, 
+                on_delete=django.db.models.deletion.SET_NULL, 
+                to='gestion_de_usuarios.vacunatorio'),
         ),
         migrations.CreateModel(
             name = 'Inscripcion',
             fields = [
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True, 
+                    primary_key=True, 
+                    serialize=False, 
+                    verbose_name='ID')),
                 ('fecha', models.DateField(blank=True, null=True)),
-                ('usuario', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gestion_de_usuarios.usuario')),
-                ('vacuna', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacuna')),
-                ('vacunatorio', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacunatorio')),
+                ('usuario', models.ForeignKey(
+                    null=True, 
+                    on_delete=django.db.models.deletion.SET_NULL, 
+                    to='gestion_de_usuarios.usuario')),
+                ('vacuna', models.ForeignKey(
+                    on_delete=django.db.models.deletion.PROTECT, 
+                    to='gestion_de_usuarios.vacuna')),
+                ('vacunatorio', models.ForeignKey(
+                    on_delete=django.db.models.deletion.PROTECT, 
+                    to='gestion_de_usuarios.vacunatorio')),
             ],
         ),
     ]

@@ -13,7 +13,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name = 'usuario',
             name = 'rol_actual',
-            field = models.CharField(blank=True, choices=[('Vac', 'Vacunador'), ('Adm', 'Administrador'), ('User', 'Usuario comun')], default=None, max_length=4, null=True),
+            field = models.CharField(
+                blank=True, 
+                choices=[
+                    ('Vac', 'Vacunador'), 
+                    ('Adm', 'Administrador'), 
+                    ('User', 'Usuario comun')], 
+                    default=None, 
+                    max_length=4, 
+                    null=True),
             model_name ='usuario',
             name = 'rol_actual',
             field = models

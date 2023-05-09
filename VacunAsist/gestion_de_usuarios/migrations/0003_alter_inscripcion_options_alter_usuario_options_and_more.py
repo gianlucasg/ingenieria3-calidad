@@ -49,7 +49,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name = 'usuario',
             name = 'last_login',
-            field = models.DateTimeField(blank=True, null=True, verbose_name='last login'),
+            field = models.DateTimeField(
+                blank=True, 
+                null=True, 
+                verbose_name='last login'),
         ),
         migrations.AddField(
             model_name = 'usuario',
@@ -59,27 +62,51 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name = 'vacuna',
             name = 'inscriptos',
-            field = models.ManyToManyField(blank=True, default=None, null=True, related_name='campañas_inscriptas', through='gestion_de_usuarios.Inscripcion', to='gestion_de_usuarios.usuario'),
+            field = models.ManyToManyField(
+                blank=True, 
+                default=None, 
+                null=True, 
+                related_name='campañas_inscriptas', 
+                through='gestion_de_usuarios.Inscripcion', 
+                to='gestion_de_usuarios.usuario'),
         ),
         migrations.AddField(
             model_name = 'vacuna',
             name = 'tienen_aplicaciones',
-            field = models.ManyToManyField(blank=True, default=None, null=True, related_name='vacunas_aplicadas', through='gestion_de_usuarios.VacunaAplicada', to='gestion_de_usuarios.usuario'),
+            field = models.ManyToManyField(
+                blank=True, 
+                default=None, 
+                null=True, 
+                related_name='vacunas_aplicadas', 
+                through='gestion_de_usuarios.VacunaAplicada', 
+                to='gestion_de_usuarios.usuario'),
         ),
         migrations.AddField(
             model_name = 'vacunatorio',
             name = 'vacunas_en_stock',
-            field = models.ManyToManyField(blank=True, default=None, null=True, related_name='vacunatorios_con_stock', through='gestion_de_usuarios.VacunaVacunatorio', to='gestion_de_usuarios.vacuna'),
+            field = models.ManyToManyField(
+                blank=True, 
+                default=None, 
+                null=True, 
+                related_name='vacunatorios_con_stock', 
+                through='gestion_de_usuarios.VacunaVacunatorio', 
+                to='gestion_de_usuarios.vacuna'),
         ),
         migrations.AlterField(
             model_name = 'usuario',
             name = 'dni',
-            field = models.CharField(max_length=8, primary_key=True, serialize=False, unique=True),
+            field = models.CharField(
+                max_length=8, 
+                primary_key=True, 
+                serialize=False, 
+                unique=True),
         ),
         migrations.AlterField(
             model_name = 'vacunador',
             name = 'usuario',
-            field = models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='gestion_de_usuarios.usuario'),
+            field = models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, 
+                to='gestion_de_usuarios.usuario'),
         ),
         migrations.AlterUniqueTogether(
             name = 'inscripcion',

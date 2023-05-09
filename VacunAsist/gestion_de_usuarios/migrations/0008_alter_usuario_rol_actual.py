@@ -6,13 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gestion_de_usuarios', '0007_usuario_rol_actual_alter_vacuna_inscriptos_and_more'),
+        ('gestion_de_usuarios', 
+        '0007_usuario_rol_actual_alter_vacuna_inscriptos_and_more'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name = 'usuario',
             name = 'rol_actual',
-            field = models.CharField(choices=[('Vac', 'Vacunador'), ('Adm', 'Administrador'), ('User', 'Usuario comun')], default=None, max_length=4),
+            field = models.CharField(
+                choices=[
+                    ('Vac', 'Vacunador'), 
+                    ('Adm', 'Administrador'), 
+                    ('User', 'Usuario comun')], 
+                default=None, 
+                max_length=4),
         ),
     ]

@@ -83,8 +83,13 @@ class Usuario(AbstractBaseUser):
     
     
     USERNAME_FIELD = "dni"
-    REQUIRED_FIELDS = ['nombre_apellido', 'sexo', 'fecha_nacimiento', 'email', 
-        'de_riesgo', 'vacunatorio_pref']
+    REQUIRED_FIELDS = [
+        'nombre_apellido', 
+        'sexo', 
+        'fecha_nacimiento', 
+        'email', 
+        'de_riesgo', 
+        'vacunatorio_pref']
 
 
     def __str__(self):
@@ -121,8 +126,10 @@ class Vacunatorio(models.Model):
     email = models.EmailField()
     numero_telefono = models.CharField(max_length = 20)
     vacunas_en_stock = models.ManyToManyField(Vacuna, 
-        related_name = "vacunatorios_con_stock", through = "VacunaVacunatorio",
-        through_fields = ("vacunatorio", "vacuna"), default = None,
+        related_name = "vacunatorios_con_stock", 
+        through = "VacunaVacunatorio",
+        through_fields = ("vacunatorio", "vacuna"), 
+        default = None,
         blank = True)
 
     def __str__(self) -> str:
@@ -178,7 +185,9 @@ class VacunasNoAplicadas(models.Model):
         db_constraint = False)
     vacuna = models.ForeignKey(Vacuna, on_delete = models.DO_NOTHING)
     fecha = models.DateField()
-    vacunatorio = models.ForeignKey(Vacunatorio, on_delete = models.DO_NOTHING)
+    vacunatorio = models.ForeignKey(
+        Vacunatorio, 
+        on_delete = models.DO_NOTHING)
     estado = models.CharField(max_length = 10)
 
 
@@ -186,5 +195,7 @@ class VacunaVacunatorio(models.Model):
     class Meta:
         unique_together = ("vacuna", "vacunatorio")
     vacuna = models.ForeignKey("Vacuna", on_delete = models.PROTECT)
-    vacunatorio = models.ForeignKey("Vacunatorio", on_delete = models.PROTECT)
+    vacunatorio = models.ForeignKey(
+        "Vacunatorio", 
+        on_delete = models.PROTECT)
     stock_remanente = models.PositiveIntegerField()

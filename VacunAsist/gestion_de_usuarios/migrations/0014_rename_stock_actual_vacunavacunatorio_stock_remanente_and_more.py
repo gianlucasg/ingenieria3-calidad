@@ -35,11 +35,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name = 'VacunasNoAplicadas',
             fields = [
-                ('id', models.BigAutoField(auto_created = True, 
-                primary_key = True, serialize = False, verbose_name = 'ID')),
+                ('id', models.BigAutoField(
+                    auto_created = True, 
+                    primary_key = True, 
+                    serialize = False, 
+                    verbose_name = 'ID')),
                 ('fecha', models.DateField()),
                 ('estado', models.CharField(max_length = 10)),
-                ('usuario', models.ForeignKey(db_constraint = False, 
+                ('usuario', models.ForeignKey(
+                    db_constraint = False, 
                     on_delete = django.db.models.deletion.DO_NOTHING, 
                     to = settings.AUTH_USER_MODEL)),
                 ('vacuna', models.ForeignKey(

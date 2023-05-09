@@ -5,7 +5,11 @@ from django.shortcuts import render, redirect
 from pyrsistent import v
 from gestion_de_usuarios.forms import User
 from gestion_de_usuarios.views import iniciar_sesion
-from gestion_de_usuarios.views import gestionar_usuarios_admin, ver_perfil, redirigir_por_rol, home, visualizar_stock_administrador
+from gestion_de_usuarios.views import (
+    gestionar_usuarios_admin, ver_perfil, 
+    redirigir_por_rol, 
+    home, 
+    visualizar_stock_administrador)
 from gestion_de_usuarios.models import VacunaAplicada
 from datetime import datetime, date
 from dateutil.relativedelta import *
@@ -92,13 +96,18 @@ def inscribir_campania_gripe (request):
     #antes = hoy + relativedelta(years=-1)  
   
 
-    #filtro las vacunas aplicadas de la gripe de ese usuario y me fijo que sea en el ultimo anio, despues las ordeno en orden desendente y me quedo con el primero (sin que sea desendente es sin el -)
+    #filtro las vacunas aplicadas de la gripe de ese usuario y me fijo 
+    #que sea en el ultimo anio, despues las ordeno en orden desendente  
+    #y me quedo con el primero (sin que sea desendente es sin el -)
     vacuna = VacunaAplicada.objects.filter(
         usuario_id__dni__exact = usuario.dni).filter(
         vacuna_id__tipo__exact = "Gripe").order_by('-fecha').first()
-    #vacuna = VacunaAplicada.objects.filter(usuario_id__dni__exact=usuario.dni, vacuna_id__tipo__exact="Gripe")
+    #vacuna = VacunaAplicada.objects.filter(usuario_id__dni__exact
+    #=usuario.dni,vacuna_id__tipo__exact="Gripe")
     #si se dio una vacuna contra la gripe en el ultimo anio
-    #vacuna = VacunaAplicada.objects.filter(usuario_id__dni__exact=usuario.dni, marca__exact="Gripe", fecha__range=[antes,hoy]).order_by('-fecha').first()
+    #vacuna = VacunaAplicada.objects.filter(usuario_id__dni__exact
+    #=usuario.dni,marca__exact="Gripe", fecha__range=[antes,hoy])
+    #.order_by('-fecha').first()
     if (vacuna):
         if ((vacuna.fecha + relativedelta(years=1)) < (hoy.date() + 
                                                        relativedelta(days=7))):
@@ -115,7 +124,8 @@ def inscribir_campania_gripe (request):
 
 #estas lineas se guardan por posibles futuros problemas
 #anios = hoy + relativedelta(days=-int(usuario.fecha_nacimiento[-2:]))
-#anios = anios + relativedelta(months=-int((usuario.fecha_nacimiento[-5:])[:2]))
+#anios = anios + relativedelta(months=-int((
+    #usuario.fecha_nacimiento[-5:])[:2]))
 #anios = anios + relativedelta(years=-int(usuario.fecha_nacimiento[:4]))
 
     fecha_turno = date(fecha_turno.year, fecha_turno.month, fecha_turno.day)
@@ -174,8 +184,9 @@ inscribirse."
     
     #si se dio una vacuna contra el covid en los ultimos 3 meses
     if (vacuna):
-        if ((vacuna.fecha + relativedelta(months=3)) < (hoy.date() + 
-                                                        relativedelta(days=7))):
+        if (
+            (vacuna.fecha + relativedelta(months=3)) < 
+            (hoy.date() + relativedelta(days=7))):
             fecha_turno = hoy + relativedelta(days=7)
         else:
             fecha_turno = vacuna.fecha + relativedelta(months=3)
@@ -212,8 +223,8 @@ no deseado."
         request.session["titulo"] = "Inscripción exitosa"
         return redirect(home)
 
-    request.session["mensaje"] = "Usted se inscribió a la campaña de vacunación \
-del COVID-19."
+    request.session["mensaje"] = "Usted se inscribió a la campaña de \
+vacunación del COVID-19."
     request.session["titulo"] = "Inscripción exitosa"
     return redirect(home)
 
@@ -242,9 +253,11 @@ inscribirse a esta campaña."
         vacuna = Vacuna.objects.filter(
         tipo = "Fiebre_amarilla").first())
 
-    #Provisoriamente vamos a poner el if gigante anashey evaluar si ya tiene turno, que en teoria no es necesario
+    #Provisoriamente vamos a poner el if gigante anashey evaluar si ya 
+    #tiene turno, que en teoria no es necesario
     if (vacuna):
-        request.session["mensaje"] = "Usted ya tiene una vacuna aplicada en otro vacunatorio"
+        request.session["mensaje"] = "Usted ya tiene una vacuna aplicada en \
+otro vacunatorio"
         request.session["titulo"] = "Inscripción fallida"
         return redirect(home)
     
@@ -292,7 +305,9 @@ def cargar_vacuna_con_turno(request):
     inscripcion = Inscripcion.objects.get(usuario_id = usuario.dni,
                                           vacuna_id__tipo = tipo)
     if (tipo != "Fiebre_amarilla"):
-            if (inscripcion): #REVISAR : Innecesario, si entra a esta funcion la inscripcion existe
+            if (inscripcion): #REVISAR : 
+                                #Innecesario, si entra a esta funcion 
+                                #la inscripcion existe
                 inscripcion.fecha = fecha_turno
                 inscripcion.save()
             else:
@@ -304,7 +319,9 @@ def cargar_vacuna_con_turno(request):
     else:
         inscripcion.delete()
         
-    #REVISAR : Deberia restar uno a vacunas en stock? Depende de como lo terminemos modelando.
+    #REVISAR : 
+        #Deberia restar uno a vacunas en stock? 
+        #Depende de como lo terminemos modelando.
 
     vacuna = VacunaAplicada(usuario = usuario, vacuna = vacu, fecha = hoy,
                             marca = marca, lote = lote,
@@ -448,16 +465,21 @@ def agregar_vacuna_covid_historial(request):
 
     vacuna = Vacuna.objects.get(tipo = tipo)
 
-    inscripcion = Inscripcion.objects.filter(usuario = user, vacuna = vacuna).first()
+    inscripcion = Inscripcion
+        .objects
+        .filter(usuario = user, vacuna = vacuna)
+        .first()
     fecha_turno = None
 
-    #ver si no existe la inscripcion tira error, en caso de que si, cambiar a esto y probar if (inscripcion) and (inscripcion.fecha < (fecha + relativedelta(years=3))):
+    #ver si no existe la inscripcion tira error, en caso de que si, 
+    #cambiar a esto y probar if (inscripcion) and 
+    #(inscripcion.fecha < (fecha + relativedelta(years=3))):
     #si eso no funciona llamar al 0800-222-lucho para mas informacion
     if inscripcion:
-        if (inscripcion.fecha == None) or (inscripcion.fecha < 
-                                           (fecha + relativedelta(months = 3))):
-            if  ((fecha + relativedelta(months = 3)) < (hoy.date() + 
-                                                      relativedelta(days = 7))):
+        if (inscripcion.fecha == None) or (inscripcion.fecha 
+            < (fecha + relativedelta(months = 3))):
+            if  ((fecha + relativedelta(months = 3)) 
+                < (hoy.date() + relativedelta(days = 7))):
                 fecha_turno = hoy + relativedelta(days = 7)
             else:
                 fecha_turno = fecha + relativedelta(months = 3)
@@ -615,7 +637,8 @@ def cargar_vacuna_gripe_sin_turno(request):
     vacuna_vacunatorio = VacunaVacunatorio.objects.filter(
         vacunatorio = request.user.vacunador.vacunatorio_de_trabajo, 
         vacuna = vacuna).first()
-    if (vacuna_vacunatorio): #PROVISORIAMENTE: DEBERIAN ESTAR SI O SI TODAS LAS VACUNA_VACUNATORIO
+    if (vacuna_vacunatorio): #PROVISORIAMENTE: 
+            #DEBERIAN ESTAR SI O SI TODAS LAS VACUNA_VACUNATORIO
         vacuna_vacunatorio.stock_remanente = \
             vacuna_vacunatorio.stock_remanente - 1
         vacuna_vacunatorio.save()
@@ -624,10 +647,9 @@ def cargar_vacuna_gripe_sin_turno(request):
         inscripcion.fecha = hoy + relativedelta(years=1)
         inscripcion.save()
         html_message = loader.render_to_string('email_turno.html',
-                    {'fecha': hoy + relativedelta(years = 1), "vacuna": "gripe"})
+            {'fecha': hoy + relativedelta(years = 1), "vacuna": "gripe"})
         try:    
-            send_mail('Notificación de actualizacion de turno para vacuna \
-contra la gripe', "",
+            send_mail('Notificación de actualizacion de turno para vacuna contra la gripe', "",
  EMAIL_HOST_USER, [usuario.email], html_message = html_message)
         except:
             pass
@@ -682,7 +704,8 @@ en este momento.'
             return redirect(ver_turnos_del_dia)
 
     #-------------------------IMPORTANTE-----------------------------#
-    #falta chequear lo de los 18n anios para el que no esta registrado, nose como vamos a obtener la fecha de nacimiento
+    #falta chequear lo de los 18n anios para el que no esta registrado, 
+    #nose como vamos a obtener la fecha de nacimiento
     #-----------------------------------------------------------------#
 
 
@@ -692,7 +715,8 @@ en este momento.'
     hoy = datetime.today()
 
     if (vacuna_aplicada) and ((hoy + relativedelta(
-        months =- 3)).date() < vacuna_aplicada.fecha): #chequear que este mayor este bien puesto y no sea menor
+        months =- 3)).date() < vacuna_aplicada.fecha): #chequear 
+            #que este mayor este bien puesto y no sea menor
         #cambiar return
         context["mensaje"] = 'Esta persona tiene una vacuna aplicada en los \
 ultimos tres meses, no puede aplicarse la vacuna'
@@ -725,7 +749,9 @@ def cargar_vacuna_covid_sin_turno(request):
     hoy = datetime.today()
     hoy = date(hoy.year, hoy.month, hoy.day)
 
-    #en teoria deberia ser distinto el cargar la vacuna aplicada si esta registrado o no, pero si esto es legal, deberia funcionar para ambos
+    #en teoria deberia ser distinto el cargar la vacuna aplicada si esta 
+    #registrado o no, pero si esto es legal, 
+    #deberia funcionar para ambos
     vacuna_aplicada = VacunaAplicada(fecha = hoy, marca = marca, lote = lote, 
                                      con_nosotros = True, usuario_id = dni,
                                      vacuna = vacuna, 
@@ -735,7 +761,8 @@ def cargar_vacuna_covid_sin_turno(request):
     vacuna_vacunatorio = VacunaVacunatorio.objects.filter(
         vacunatorio=request.user.vacunador.vacunatorio_de_trabajo,
         vacuna=vacuna).first()
-    if (vacuna_vacunatorio): #PROVISORIAMENTE: DEBERIAN ESTAR SI O SI TODAS LAS VACUNA_VACUNATORIO
+    if (vacuna_vacunatorio): #PROVISORIAMENTE: 
+            #DEBERIAN ESTAR SI O SI TODAS LAS VACUNA_VACUNATORIO
         vacuna_vacunatorio.stock_remanente = \
             vacuna_vacunatorio.stock_remanente - 1
         vacuna_vacunatorio.save()
@@ -840,7 +867,9 @@ def cargar_vacuna_fiebre_amarilla_sin_turno(request):
 
     hoy = date(hoy.year, hoy.month, hoy.day)
 
-    #en teoria deberia ser distinto el cargar la vacuna aplicada si esta registrado o no, pero si esto es legal, deberia funcionar para ambos
+    #en teoria deberia ser distinto el cargar la vacuna aplicada si 
+    #esta registrado o no, pero si esto es legal, 
+    #deberia funcionar para ambos
     vacuna_aplicada = VacunaAplicada(fecha = hoy, marca = marca, lote = lote,
                         con_nosotros = True, usuario_id = dni,vacuna = vacuna, 
                         vacunatorio = user.vacunatorio_trabajo)
@@ -849,7 +878,8 @@ def cargar_vacuna_fiebre_amarilla_sin_turno(request):
     vacuna_vacunatorio = VacunaVacunatorio.objects.filter(
         vacunatorio=request.user.vacunador.vacunatorio_de_trabajo, 
         vacuna=vacuna).first()
-    if (vacuna_vacunatorio): #PROVISORIAMENTE: DEBERIAN ESTAR SI O SI TODAS LAS VACUNA_VACUNATORIO
+    if (vacuna_vacunatorio): #PROVISORIAMENTE: 
+            #DEBERIAN ESTAR SI O SI TODAS LAS VACUNA_VACUNATORIO
         vacuna_vacunatorio.stock_remanente = \
             vacuna_vacunatorio.stock_remanente - 1
         vacuna_vacunatorio.save()
@@ -1032,7 +1062,8 @@ def posponer_turno(request):
     tipo = request.POST.get("Tipo")
     context = dict.fromkeys(["mensaje","Confi"], "")
 
-    #esto seria para hacer la confirmacion de la baja pero no estoy del todo seguro.
+    #esto seria para hacer la confirmacion de la baja 
+    #pero no estoy del todo seguro.
     #if confirmacion != "":
 
     usuario=Usuario.objects.filter(dni=dni).first()
@@ -1113,7 +1144,9 @@ def modificar_datos(request):
     usuario.email = mail
     usuario.save()
     context["mensaje"] = 'Sus datos han sido modificados correctamente.'
-    #context["mensaje"] = 'Su nuevo vacunatorio de preferencia que es: {nombre_vacunatorio}, esto no modifica los turnos que ya tenga asignados'
+    #context["mensaje"] = 'Su nuevo vacunatorio de preferencia que es: 
+    #{nombre_vacunatorio}, esto no modifica los 
+    #turnos que ya tenga asignados'
     request.session["context"] = context
     return redirect(ver_perfil)
     
@@ -1214,9 +1247,12 @@ def visualizar_cantidad_turnos(request):
     #if request.POST:
     #    fecha_inicio = request.POST.get("fecha_inicio")
     #    fecha_fin = request.POST.get("fecha_fin")
-    #    if fecha_inicio and fecha_fin and (fecha_inicio >= date.today()) and (fecha_inicio < fecha_fin):
-    #        context["titulo"] = f"Estas visualizando: turnos entre {fecha_inicio} y {fecha_fin}."
-    #        turnos = Inscripcion.objects.exclude(fecha__is_null=True).filter(fecha__range=[fecha_inicio, fecha_fin])
+    #    if fecha_inicio and fecha_fin and (fecha_inicio >= 
+    #date.today()) and (fecha_inicio < fecha_fin):
+    #        context["titulo"] = f"Estas visualizando: turnos entre 
+                #{fecha_inicio} y {fecha_fin}."
+    #        turnos = Inscripcion.objects.exclude(fecha__is_null=True)
+    #        .filter(fecha__range=[fecha_inicio, fecha_fin])
     #    else:
     #        context["mensaje"]= 'Las fechas ingresadas no son válidas'
     vacunatorios = [i.nombre for i in Vacunatorio.objects.all()]
