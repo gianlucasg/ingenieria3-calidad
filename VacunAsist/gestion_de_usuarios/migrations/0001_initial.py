@@ -8,14 +8,13 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     initial = True
-
     dependencies = [
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Usuario',
-            fields=[
+            name = 'Usuario',
+            fields = [
                 ('dni', models.CharField(editable=False, max_length=8, primary_key=True, serialize=False)),
                 ('nombre_apellido', models.CharField(max_length=50)),
                 ('sexo', models.CharField(choices=[('F', 'Femenino'), ('M', 'Masculino')], max_length=1)),
@@ -27,15 +26,15 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Vacuna',
-            fields=[
+            name = 'Vacuna',
+            fields = [
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('tipo', models.CharField(max_length=20)),
             ],
         ),
         migrations.CreateModel(
-            name='Vacunatorio',
-            fields=[
+            name = 'Vacunatorio',
+            fields = [
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('nombre', models.CharField(max_length=30)),
                 ('direccion', models.CharField(max_length=25)),
@@ -44,8 +43,8 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='VacunaVacunatorio',
-            fields=[
+            name = 'VacunaVacunatorio',
+            fields = [
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('stock_actual', models.PositiveIntegerField()),
                 ('vacuna', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacuna')),
@@ -53,16 +52,16 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Vacunador',
-            fields=[
+            name = 'Vacunador',
+            fields = [
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('usuario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gestion_de_usuarios.usuario', unique=True)),
                 ('vacunatorio_de_trabajo', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gestion_de_usuarios.vacunatorio')),
             ],
         ),
         migrations.CreateModel(
-            name='VacunaAplicada',
-            fields=[
+            name = 'VacunaAplicada',
+            fields = [
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('fecha', models.DateField(default=datetime.date.today)),
                 ('marca', models.CharField(blank=True, max_length=20, null=True)),
@@ -73,13 +72,13 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='usuario',
-            name='vacunatorio_pref',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gestion_de_usuarios.vacunatorio'),
+            model_name = 'usuario',
+            name = 'vacunatorio_pref',
+            field = models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gestion_de_usuarios.vacunatorio'),
         ),
         migrations.CreateModel(
-            name='Inscripcion',
-            fields=[
+            name = 'Inscripcion',
+            fields = [
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('fecha', models.DateField(blank=True, null=True)),
                 ('usuario', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gestion_de_usuarios.usuario')),

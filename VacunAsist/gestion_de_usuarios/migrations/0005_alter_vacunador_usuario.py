@@ -13,8 +13,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='vacunador',
-            name='usuario',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='vacunador', to=settings.AUTH_USER_MODEL),
+            model_name = 'vacunador',
+            name = 'usuario',
+            field = models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='vacunador', to=settings.AUTH_USER_MODEL),
         ),
     ]
