@@ -6,13 +6,16 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 class MyAccountManager(BaseUserManager):
 
-    def crear_usuario(self, dni, nombre_apellido, sexo, email, de_riesgo, fecha_nacimiento, clave_alfanumerica, vacunatorio_pref, password):
+    def crear_usuario(self, dni, nombre_apellido, sexo, email, de_riesgo, 
+        fecha_nacimiento, clave_alfanumerica, vacunatorio_pref, password):
         """Crea un usuario con el dni"""
-        values = [dni, nombre_apellido, sexo, email, de_riesgo, fecha_nacimiento, clave_alfanumerica, vacunatorio_pref, password]
+        values = [dni, nombre_apellido, sexo, email, de_riesgo, 
+            fecha_nacimiento, clave_alfanumerica, vacunatorio_pref, password]
         dicci_campos = dict(zip(self.model.REQUIRED_FIELDS, values))
         for nombre_campo, valor in dicci_campos.items():
             if not valor: #VALOR == NULL
-                raise ValueError(f"El valor {nombre_campo} debe ser especificado")
+                raise ValueError(f"El valor {nombre_campo} 
+debe ser especificado")
 
         user = self.model(
             dni = dni,
@@ -30,7 +33,9 @@ class MyAccountManager(BaseUserManager):
         user.save(using = self._db)
         return user
     
-    def crear_administrador(self, dni, nombre_apellido, sexo, email, de_riesgo, fecha_nacimiento, clave_alfanumerica, vacunatorio_pref, password):
+    def crear_administrador(self, dni, nombre_apellido, sexo, email, 
+        de_riesgo, fecha_nacimiento, clave_alfanumerica, vacunatorio_pref, 
+        password):
         user = self.model(
             dni = dni,
             email = self.normalize_email(email),
@@ -60,10 +65,15 @@ class Usuario(AbstractBaseUser):
     email = models.EmailField()
     de_riesgo = models.BooleanField(default = False)
     fecha_nacimiento = models.DateField()
-    password = models.CharField(null = True, max_length = 50, verbose_name = 'contrasenia')  #ver max_length por hashing/encriptacion
+    password = models.CharField(null = True, max_length = 50, 
+        verbose_name = 'contrasenia')  
+        #ver max_length por hashing/encriptacion
     clave_alfanumerica = models.CharField(max_length = 5)
-    vacunatorio_pref = models.ForeignKey("Vacunatorio", on_delete = models.SET_NULL, null = True) #deberiamos cambiar las HU en tal caso, noguta
-    rol_actual = models.CharField(max_length = 20, default = None ,blank = True, null = True)
+    vacunatorio_pref = models.ForeignKey("Vacunatorio", 
+        on_delete = models.SET_NULL, null = True) 
+        #deberiamos cambiar las HU en tal caso, noguta
+    rol_actual = models.CharField(max_length = 20, default = None ,
+        blank = True, null = True)
 
     class Meta:
         verbose_name_plural = "Usuarios"
@@ -73,7 +83,8 @@ class Usuario(AbstractBaseUser):
     
     
     USERNAME_FIELD = "dni"
-    REQUIRED_FIELDS = ['nombre_apellido', 'sexo', 'fecha_nacimiento', 'email', 'de_riesgo', 'vacunatorio_pref']
+    REQUIRED_FIELDS = ['nombre_apellido', 'sexo', 'fecha_nacimiento', 'email', 
+        'de_riesgo', 'vacunatorio_pref']
 
 
     def __str__(self):
@@ -89,17 +100,19 @@ class Usuario(AbstractBaseUser):
 class Vacuna(models.Model):
     tipo = models.CharField(max_length = 20)
     
-    inscriptos = models.ManyToManyField(Usuario, related_name = "campañas_inscriptas", 
-    through = "Inscripcion",
-    through_fields = ("vacuna", "usuario"),
-    default = None,
-    blank = True)
+    inscriptos = models.ManyToManyField(Usuario, 
+        related_name = "campañas_inscriptas", 
+        through = "Inscripcion",
+        through_fields = ("vacuna", "usuario"),
+        default = None,
+        blank = True)
     
-    tienen_aplicaciones = models.ManyToManyField(Usuario, related_name = "vacunas_aplicadas", 
-    through = "VacunaAplicada",
-    through_fields = ("vacuna", "usuario"),
-    default = None,
-    blank = True)
+    tienen_aplicaciones = models.ManyToManyField(Usuario, 
+        related_name = "vacunas_aplicadas", 
+        through = "VacunaAplicada",
+        through_fields = ("vacuna", "usuario"),
+        default = None,
+        blank = True)
 
     
 class Vacunatorio(models.Model):
@@ -107,19 +120,20 @@ class Vacunatorio(models.Model):
     direccion = models.CharField(max_length = 25)
     email = models.EmailField()
     numero_telefono = models.CharField(max_length = 20)
-    vacunas_en_stock = models.ManyToManyField(Vacuna, related_name = "vacunatorios_con_stock", 
-    through = "VacunaVacunatorio",
-    through_fields = ("vacunatorio", "vacuna"),
-    default = None,
-    blank = True)
+    vacunas_en_stock = models.ManyToManyField(Vacuna, 
+        related_name = "vacunatorios_con_stock", through = "VacunaVacunatorio",
+        through_fields = ("vacunatorio", "vacuna"), default = None,
+        blank = True)
 
     def __str__(self) -> str:
         return self.nombre
 
 
 class Vacunador(models.Model):
-    usuario = models.OneToOneField(Usuario, related_name = "vacunador", on_delete = models.CASCADE)
-    vacunatorio_de_trabajo = models.ForeignKey(Vacunatorio, on_delete = models.PROTECT)
+    usuario = models.OneToOneField(Usuario, related_name = "vacunador", 
+        on_delete = models.CASCADE)
+    vacunatorio_de_trabajo = models.ForeignKey(Vacunatorio, 
+        on_delete = models.PROTECT)
 
     class Meta:
         verbose_name_plural = "Vacunadores"
@@ -132,19 +146,26 @@ class Inscripcion(models.Model):
     class Meta:
         verbose_name_plural = "Inscripciones"
         
-    usuario = models.ForeignKey(Usuario, on_delete = models.SET_NULL, null = True) #decidir
-    fecha = models.DateField(blank = True, null = True)
-    vacunatorio = models.ForeignKey(Vacunatorio, on_delete = models.PROTECT)  #decidir
-    vacuna = models.ForeignKey(Vacuna, on_delete = models.PROTECT) #decidir
+    usuario = models
+        .ForeignKey(Usuario, 
+            on_delete = models.SET_NULL, null = True) #decidir
+    fecha = models
+        .DateField(blank = True, null = True)
+    vacunatorio = models
+        .ForeignKey(Vacunatorio, on_delete = models.PROTECT)  #decidir
+    vacuna = models
+        .ForeignKey(Vacuna, on_delete = models.PROTECT) #decidir
 
 
 class VacunaAplicada(models.Model):
     class Meta: 
         unique_together = ("usuario", "vacuna")
         verbose_name_plural = "Vacunas_aplicadas"
-    usuario = models.ForeignKey("Usuario", on_delete = models.DO_NOTHING, db_constraint = False)
+    usuario = models.ForeignKey("Usuario", on_delete = models.DO_NOTHING, 
+        db_constraint = False)
     vacuna = models.ForeignKey(Vacuna, on_delete = models.DO_NOTHING)
-    vacunatorio = models.ForeignKey(Vacunatorio, on_delete = models.DO_NOTHING, default = None)
+    vacunatorio = models.ForeignKey(Vacunatorio, 
+        on_delete = models.DO_NOTHING, default = None)
     fecha = models.DateField(default = date.today)
     marca = models.CharField(max_length = 20, blank = True, null = True)
     lote = models.CharField(max_length = 20, blank = True, null = True)
@@ -153,7 +174,8 @@ class VacunaAplicada(models.Model):
 class VacunasNoAplicadas(models.Model):
     class Meta: 
         verbose_name_plural = "Vacunas_pospuestas"
-    usuario = models.ForeignKey("Usuario", on_delete = models.DO_NOTHING, db_constraint = False)
+    usuario = models.ForeignKey("Usuario", on_delete = models.DO_NOTHING, 
+        db_constraint = False)
     vacuna = models.ForeignKey(Vacuna, on_delete = models.DO_NOTHING)
     fecha = models.DateField()
     vacunatorio = models.ForeignKey(Vacunatorio, on_delete = models.DO_NOTHING)

@@ -24,19 +24,38 @@ class FormularioDeRegistro (UserCreationForm):
     - Enfermedades Respiratorias Crónicas"""
     dni =  forms.CharField(max_length = 8, min_length = 7, label = "DNI")
     email = forms.EmailField(label = "Email")
-    nombre_apellido = forms.CharField(max_length = 50, label = "Nombre y apellido")
-    sexo = forms.ChoiceField(label = "Sexo (Como figura en el DNI)", choices = (("M", "Masculino"),("F", "Femenino")))
-    de_riesgo = forms.ChoiceField(label = "De riesgo", choices = (("1", "Si"), ("0", "No")), widget = forms.RadioSelect(attrs = {'class' : 'form-check-inline'}), help_text = mensaje_riesgo)
-    password1 = forms.CharField(label = "Contraseña", widget = forms.PasswordInput, label_suffix = "contraseña")
-    password2 = forms.CharField(label = "Repita su contraseña", widget = forms.PasswordInput)
-    fecha_nacimiento  = forms.DateField(label = "Fecha de nacimiento", widget = forms.SelectDateWidget(years = range(date.today().year-110, date.today().year)), input_formats = DATE_INPUT_FORMATS)
-    vacunatorio_pref = forms.ModelChoiceField(label = "Vacunatorio de preferencia", queryset = Vacunatorio.objects.all(), widget = forms.Select, empty_label = None)
-    numero_tramite = forms.CharField(max_length = 11, label = "Numero de tramite", help_text = "Campo necesario para validar su identidad")
-    field_order = ['dni', 'numero_tramite', 'nombre_apellido', 'sexo',"fecha_nacimiento", "email", "password1", "password2", "vacunatorio_pref", "de_riesgo"]
+    nombre_apellido = forms.CharField(max_length = 50, 
+        label = "Nombre y apellido")
+    sexo = forms.ChoiceField(label = "Sexo (Como figura en el DNI)", 
+        choices = (("M", "Masculino"),("F", "Femenino")))
+    de_riesgo = forms.ChoiceField(label = "De riesgo", 
+        choices = (("1", "Si"), ("0", "No")), widget = forms.RadioSelect(
+        attrs = {'class' : 'form-check-inline'}), 
+        help_text = mensaje_riesgo)
+    password1 = forms.CharField(label = "Contraseña", 
+        widget = forms.PasswordInput, label_suffix = "contraseña")
+    password2 = forms.CharField(label = "Repita su contraseña", 
+        widget = forms.PasswordInput)
+    fecha_nacimiento  = forms.DateField(label = "Fecha de nacimiento", 
+        widget = forms.SelectDateWidget(
+        years = range(date.today().year-110, date.today().year)), 
+        input_formats = DATE_INPUT_FORMATS)
+    vacunatorio_pref = forms.ModelChoiceField(
+        label = "Vacunatorio de preferencia", 
+        queryset = Vacunatorio.objects.all(), widget = forms.Select, 
+        empty_label = None)
+    numero_tramite = forms.CharField(max_length = 11, 
+        label = "Numero de tramite", 
+        help_text = "Campo necesario para validar su identidad")
+    field_order = ['dni', 'numero_tramite', 'nombre_apellido', 'sexo',
+        "fecha_nacimiento", "email", "password1", "password2", 
+        "vacunatorio_pref", "de_riesgo"]
    
     class Meta:
-       model = Usuario
-       fields = ('dni', 'numero_tramite', 'nombre_apellido', 'sexo', "fecha_nacimiento", "email", "password1", "vacunatorio_pref", "de_riesgo")
+        model = Usuario
+        fields = ('dni', 'numero_tramite', 'nombre_apellido', 'sexo', 
+            "fecha_nacimiento", "email", "password1", 
+            "vacunatorio_pref", "de_riesgo")
    
 
 
@@ -50,7 +69,8 @@ class FormularioDeRegistro (UserCreationForm):
         dni = self.cleaned_data["dni"]
         new = Usuario.objects.filter(dni = dni)  
         if new.count():  
-            raise ValidationError("Ya existe una cuenta con el DNI. Probá con otro.")  
+            raise ValidationError("Ya existe una cuenta con el DNI. Probá con \
+otro.")  
         return dni
         
 
@@ -73,9 +93,11 @@ class FormularioDeRegistro (UserCreationForm):
         password1 = self.cleaned_data['password1']  
         password2 = self.cleaned_data['password2'] 
         if not bool(re.search(r'\d', password1)):
-            raise ValidationError("La contraseña debe contener por lo menos un dígito.")
+            raise ValidationError("La contraseña debe contener por lo menos \
+un dígito.")
         if not bool(re.search('[a-zA-Z]', password1)):
-            raise ValidationError("La contraseña debe contener por lo menos una letra.")
+            raise ValidationError("La contraseña debe contener por lo menos \
+una letra.")
         if not(password1 and password2 and password1 == password2):  
             raise ValidationError("Las contraseñas no coinciden.")  
         return password2  
@@ -105,15 +127,19 @@ class FormularioDeRegistro (UserCreationForm):
                 'Content-Type' : "application/json"
                 }
             try:
-                response = requests.post("https://hhvur3txna.execute-api.sa-east-1.amazonaws.com/dev/person/validate", 
+                response = requests.post("https://hhvur3txna.execute-api.sa-\
+east-1.amazonaws.com/dev/person/validate", 
                 headers = headers, json = persona)
             except:
-                raise ValidationError("Hubo un fallo en la conexión con el servidor. Vuelva a intentarlo más tarde.")
+                raise ValidationError("Hubo un fallo en la conexión con el \
+servidor. Vuelva a intentarlo más tarde.")
             else:
                 if (response.status_code == 403):
-                    raise ValidationError("Hubo un fallo en la conexión con el servidor. Vuelva a intentarlo más tarde.")
+                    raise ValidationError("Hubo un fallo en la conexión con \
+el servidor. Vuelva a intentarlo más tarde.")
                 if (response.status_code != 200):
-                    raise ValidationError("Error de validación. Verifique que sus datos sean correctos e intente de nuevo.")
+                    raise ValidationError("Error de validación. Verifique que \
+sus datos sean correctos e intente de nuevo.")
 
     def save(self, clave_alfanumerica, commit = True):
         user = Usuario.objects.crear_usuario(  
@@ -137,8 +163,10 @@ class FormularioDeRegistro (UserCreationForm):
 class FormularioDeAutenticacion(forms.ModelForm):
     
     dni =  forms.CharField(max_length = 8, label = "DNI")
-    password = forms.CharField(label = "Contraseña", widget = forms.PasswordInput, label_suffix = "contraseña")
-    clave_alfanumerica = forms.CharField(label = "Clave alfanumérica", max_length = 5)
+    password = forms.CharField(label = "Contraseña", 
+        widget = forms.PasswordInput, label_suffix = "contraseña")
+    clave_alfanumerica = forms.CharField(label = "Clave alfanumérica", 
+        max_length = 5)
 
     class Meta:
         model = Usuario
@@ -153,8 +181,10 @@ class FormularioDeAutenticacion(forms.ModelForm):
             try:
                 user = Usuario.objects.get(dni = dni)
             except Usuario.DoesNotExist:
-                raise ValidationError("El DNI ingresado no se encuentra registrado en el sistema.")
-            if not(user.check_password(password) and (user.clave_alfanumerica == clave_alfanumerica)):
+                raise ValidationError("El DNI ingresado no se encuentra \
+registrado en el sistema.")
+            if not(user.check_password(password) and 
+                (user.clave_alfanumerica == clave_alfanumerica)):
                 raise forms.ValidationError("DNI y/o contraseñas inválidas")
     
     

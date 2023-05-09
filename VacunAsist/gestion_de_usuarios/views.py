@@ -4,8 +4,16 @@ from django.http import HttpResponse
 import numpy as np
 from django.shortcuts import render, redirect, HttpResponse
 from django.template import loader
-from gestion_de_usuarios.models import Inscripcion, VacunaAplicada, Vacuna, Vacunatorio, VacunaVacunatorio, Vacunador, VacunasNoAplicadas
-from gestion_de_usuarios.forms import FormularioDeRegistro, FormularioDeAutenticacion
+from gestion_de_usuarios.models import (Inscripcion, 
+    VacunaAplicada, 
+    Vacuna, 
+    Vacunatorio, 
+    VacunaVacunatorio, 
+    Vacunador, 
+    VacunasNoAplicadas)
+from gestion_de_usuarios.forms import (
+    FormularioDeRegistro, 
+    FormularioDeAutenticacion)
 from django.contrib.auth import login, authenticate, logout
 from gestion_de_usuarios.models import Usuario
 import plotly.express as px
@@ -32,7 +40,8 @@ User = get_user_model()
 def home(request):
 
     if request.user.is_authenticated:
-        context = dict.fromkeys(["user", "rol", "covid", "fiebre_amarilla", "gripe", "mensaje", "titulo", "vacuna_fa"], "No")
+        context = dict.fromkeys(["user", "rol", "covid", "fiebre_amarilla", 
+            "gripe", "mensaje", "titulo", "vacuna_fa"], "No")
         user = request.user
         if (user.rol_actual != "Ciudadano"):
             return redirigir_por_rol(request)
@@ -43,10 +52,23 @@ def home(request):
         request.session["titulo"] = ""
 
         inscripciones = Inscripcion.objects.filter(usuario = user)
-        covid = inscripciones.filter(vacuna = Vacuna.objects.filter(tipo = "COVID-19").first()) #ARREGLAR
-        fiebre_amarilla = inscripciones.filter(vacuna = Vacuna.objects.filter(tipo = "Fiebre_amarilla").first())
-        vacuna_fa = VacunaAplicada.objects.filter(usuario = user, vacuna = Vacuna.objects.filter(tipo = "Fiebre_amarilla").first(),con_nosotros = True)
-        gripe = inscripciones.filter(vacuna = Vacuna.objects.filter(tipo = "Gripe").first())
+        covid = inscripciones
+            .filter(vacuna = Vacuna
+            .objects
+            .filter(tipo = "COVID-19").first()) #ARREGLAR
+        fiebre_amarilla = inscripciones
+            .filter(vacuna = Vacuna
+                .objects
+                .filter(tipo = "Fiebre_amarilla")
+                .first())
+        vacuna_fa = VacunaAplicada
+            .objects
+            .filter(usuario = user, vacuna = Vacuna
+                .objects
+                .filter(tipo = "Fiebre_amarilla")
+                .first(),con_nosotros = True)
+        gripe = inscripciones
+            .filter(vacuna = Vacuna.objects.filter(tipo = "Gripe").first())
         if(vacuna_fa):
             context["vacuna_fa"] = "Si"
         if (covid):
@@ -71,7 +93,9 @@ def visualizar_stock_administrador(request):
 
     context = dict.fromkeys(["vacunas", "mensaje"], "")
 
-    context["sobrante"] = len(Inscripcion.objects.filter(fecha__lt = date.today()))
+    context["sobrante"] = len(Inscripcion
+        .objects
+        .filter(fecha__lt = date.today()))
     context["vacunas"] = VacunaVacunatorio.objects.all()
     context["mensaje"] = request.session.get('mensaje', "")
     request.session["mensaje"] = ""
@@ -106,18 +130,23 @@ def registrar(request):
     if request.POST:
         form = FormularioDeRegistro(request.POST)
         if form.is_valid():
-            clave_alfanum = ''.join(random.choices(string.ascii_letters + string.digits, k = 5))
+            clave_alfanum = ''.join(
+                random.choices(string.ascii_letters + string.digits, k = 5)
+            )
             form.save(clave_alfanum)
             dni = form.cleaned_data["dni"]
             password = form.cleaned_data["password1"]
             mail = request.POST.get('email')
-            html_message = loader.render_to_string('email_clave.html', {'clave': clave_alfanum})
+            html_message = loader
+                .render_to_string('email_clave.html', {'clave': clave_alfanum})
             try:
-                send_mail('Clave alfanumerica Vacunassist', "", EMAIL_HOST_USER, [mail], html_message = html_message)
+                send_mail('Clave alfanumerica Vacunassist', "", 
+                    EMAIL_HOST_USER, [mail], html_message = html_message)
             except:
                 pass
             user = authenticate(dni = dni, password = password)
-            login(request, user, backend = 'django.contrib.auth.backends.ModelBackend')
+            login(request, user, 
+                backend = 'django.contrib.auth.backends.ModelBackend')
             destination = get_redirect_if_exists(request)
             if destination: 
                 return redirect(destination)
@@ -147,7 +176,10 @@ def ver_turnos_del_dia(request):
     context = request.session.get("context", {})
     if (context == {}):
         context["mensaje"] = request.session.get('mensaje', "")
-    turnos = Inscripcion.objects.filter(fecha = date.today()).filter(vacunatorio_id = user.vacunador.vacunatorio_de_trabajo)
+    turnos = Inscripcion
+        .objects
+        .filter(fecha = date.today())
+        .filter(vacunatorio_id = user.vacunador.vacunatorio_de_trabajo)
     hoy = str(date.today())
     tipos = Vacuna.objects.all()
     
@@ -181,7 +213,8 @@ def iniciar_sesion(request, *args, **kwargs):
             dni = request.POST.get('dni')
             user = Usuario.objects.get(dni = dni)
             if user:
-                login(request, user, backend = 'django.contrib.auth.backends.ModelBackend')
+                login(request, user, 
+                    backend = 'django.contrib.auth.backends.ModelBackend')
                 if not(user.es_administrador) or not(user.es_vacunador) :
                     user.rol_actual = "Ciudadano"
                     user.save()
@@ -245,21 +278,30 @@ def descargar_certificado_fiebre_amarilla(request):
         ],
         'no-outline': None,
     }
-    config = pdfkit.configuration(wkhtmltopdf = 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+    config = pdfkit.configuration(
+        wkhtmltopdf = 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'
+    )
     context = dict.fromkeys("user", "vacuna")
     usuario = request.user
     context["user"] = usuario
-    vacuna = VacunaAplicada.objects.filter(usuario = usuario, vacuna = Vacuna.objects.get(tipo = "Fiebre_amarilla")).first()
+    vacuna = VacunaAplicada
+        .objects
+        .filter(usuario = usuario, 
+            vacuna = Vacuna.objects.get(tipo = "Fiebre_amarilla"))
+        .first()
     context["vacuna"] = vacuna
     filename = "certificado.pdf"
-    path_certificado = os.path.normpath(os.path.join(Path(__file__), os.pardir, os.pardir, "Vacunasist", "Vacunasist", "templates", "CERTIFICADO-RENDER.html"))
+    path_certificado = os.path.normpath(os.path.join(Path(__file__), 
+        os.pardir, os.pardir, "Vacunasist", "Vacunasist", "templates", 
+        "CERTIFICADO-RENDER.html"))
     f = open(path_certificado, "w")
     html = loader.get_template("CERTIFICADO.html")
     html_content = html.render(context)
     f.write(html_content)
     f.close()
 
-    certificado = pdfkit.from_file(path_certificado, output_path = None, configuration = config, options = options)
+    certificado = pdfkit.from_file(path_certificado, output_path = None, 
+        configuration = config, options = options)
     response = HttpResponse(certificado, content_type = mimetypes.guess_type)
     response["Content-Disposition"] = f"attachment; filename = {filename}"
     return response
@@ -267,7 +309,8 @@ def descargar_certificado_fiebre_amarilla(request):
 @login_required
 def buscar_dni(request): 
 
-    context = dict.fromkeys(["dni", "nombre_apellido", "fecha_nacimiento", "registrado", "mensaje"], "")
+    context = dict.fromkeys(["dni", "nombre_apellido", "fecha_nacimiento", 
+        "registrado", "mensaje"], "")
     dni = request.POST.get("Dni")
     usuario_registrado = Usuario.objects.filter(dni = dni).first()
     
@@ -287,21 +330,28 @@ def buscar_dni(request):
             'Content-Type' : "application/json"
             }
     try:
-        response = requests.post("https://hhvur3txna.execute-api.sa-east-1.amazonaws.com/dev/person/lookup", 
+        response = requests.post("https://hhvur3txna.execute-api.sa-east-1.\
+amazonaws.com/dev/person/lookup", 
         headers = headers, json = persona)
     except:
-        context["mensaje"] = "Hubo un fallo en la conexión con el servidor. Vuelva a intentarlo más tarde."
+        context["mensaje"] = "Hubo un fallo en la conexión con el servidor. \
+Vuelva a intentarlo más tarde."
     else:
         if (response.status_code == 403):
-            context["mensaje"] = "Hubo un fallo en la conexión con el servidor. Vuelva a intentarlo más tarde."
+            context["mensaje"] = "Hubo un fallo en la conexión con el \
+servidor. Vuelva a intentarlo más tarde."
         if (response.status_code != 200):
-            context["mensaje"] = "El DNI no esta asociado a un documento valido de la República Argentina."
+            context["mensaje"] = "El DNI no esta asociado a un documento \
+valido de la República Argentina."
         else:
             persona = response.content
             persona = json.loads(persona)
             context["dni"] = dni
             context["nombre_apellido"] = persona["apellido"]
-            context["fecha_nacimiento"] = str(datetime.strptime(persona["fechaNacimiento"][:10], "%Y-%m-%d").date())
+            context["fecha_nacimiento"] = 
+                str(datetime
+                    .strptime(persona["fechaNacimiento"][:10], "%Y-%m-%d")
+                    .date())
             context["registrado"] = "no"
             context["mensaje"] = None
     request.session["context"] = context
@@ -315,20 +365,25 @@ def alta_vacunador(request):
     dni = request.POST.get("Dni")
     vacunatorio_trabajo = request.POST.get("VacunatorioTrabajo")
     usuario = Usuario.objects.filter(dni = dni).first()
-    vacunatorio = Vacunatorio.objects.filter(nombre = vacunatorio_trabajo).first()
+    vacunatorio = Vacunatorio
+        .objects
+        .filter(nombre = vacunatorio_trabajo)
+        .first()
     if (usuario):
         if (usuario.es_vacunador):
             context["mensaje"] = "El usuario ya es un vacunador."
         else:
             usuario.es_vacunador = True
-            vacunador = Vacunador(usuario = usuario, vacunatorio_de_trabajo = vacunatorio)
+            vacunador = Vacunador(usuario = usuario, 
+                vacunatorio_de_trabajo = vacunatorio)
             vacunador.save()
             usuario.vacunador = vacunador
             usuario.save()
-
-            context["mensaje"] = "El vacunador ha sido dado de alta exitosamente."
+            context["mensaje"] = 
+                "El vacunador ha sido dado de alta exitosamente."
     else:    
-        context["mensaje"] = "El DNI ingresado no se encuentra registrado en el sistema"
+        context["mensaje"] = 
+            "El DNI ingresado no se encuentra registrado en el sistema"
     request.session["context"] = context
     return redirect(gestionar_usuarios_admin)
 
@@ -345,9 +400,11 @@ def alta_administrador(request):
         else:
             usuario.es_administrador = True
             usuario.save()
-            context["mensaje"] = "El administrador ha sido dado de alta exitosamente."
+            context["mensaje"] = 
+                "El administrador ha sido dado de alta exitosamente."
     else:
-        context["mensaje"] = "El DNI ingresado no se encuentra registrado en el sistema"
+        context["mensaje"] = 
+            "El DNI ingresado no se encuentra registrado en el sistema"
     request.session["context"] = context
 
     return redirect(gestionar_usuarios_admin)
@@ -375,7 +432,9 @@ def visualizar_estadisticas(request):
     user = request.user
     if (user.rol_actual != "Administrador"):
         return redirigir_por_rol(request)
-    context = dict.fromkeys(["mensaje", "grafico_poli", "grafico_corr", "grafico_hosp", "grafico_total", "grafico_vacuna", "vacunatorios"], "")
+    context = dict.fromkeys([
+        "mensaje", "grafico_poli", "grafico_corr", "grafico_hosp", 
+        "grafico_total", "grafico_vacuna", "vacunatorios"], "")
     print(context["mensaje"])
     #Obtengo la fecha inicial y la fecha final de la pantalla
     fecha_inicial = request.GET.get("Fecha_ini")
@@ -383,17 +442,25 @@ def visualizar_estadisticas(request):
     print(fecha_inicial)
     print(fecha_final)
 
-    #Cargo las vacunas aplicadas y no aplicadas en un df, corrijo valores y nombres de columnas
+    #Cargo las vacunas aplicadas y no aplicadas en un df, 
+    #corrijo valores y nombres de columnas
     vac_aplicadas = VacunaAplicada.objects.all().values()
     vac_aplicadas_df = pd.DataFrame(vac_aplicadas)
     pospuestas_y_canceladas = VacunasNoAplicadas.objects.all().values()
     vac_no_aplicadas_df = pd.DataFrame(pospuestas_y_canceladas)
     df_vacunas = vac_aplicadas_df.append(vac_no_aplicadas_df)
-    df_vacunas["estado"] = df_vacunas["estado"].replace(to_replace = np.nan, value = "Aplicado")
+    df_vacunas["estado"] = df_vacunas["estado"]
+        .replace(to_replace = np.nan, value = "Aplicado")
     df_vacunas['fecha'] = pd.to_datetime(df_vacunas['fecha'])
     df_vacunas['fecha'] = df_vacunas['fecha'] - pd.to_timedelta(7, unit = 'd')
-    df_vacunas = df_vacunas.groupby(['vacuna_id', 'vacunatorio_id', 'estado', pd.Grouper(key = 'fecha', freq = 'W-MON')])["id"].count().reset_index()
-    df_vacunas.columns = ["Vacuna", "Vacunatorio", "Estado", "Semana", "Cantidad"]
+    df_vacunas = df_vacunas.groupby([
+            'vacuna_id', 'vacunatorio_id', 'estado', 
+            pd.Grouper(key = 'fecha', freq = 'W-MON')
+        ])["id"]
+        .count()
+        .reset_index()
+    df_vacunas.columns = ["Vacuna", "Vacunatorio", "Estado", "Semana", 
+        "Cantidad"]
 
     #Si existe fecha inicial, comienzo las validaciones
     if (fecha_inicial):
@@ -409,14 +476,16 @@ def visualizar_estadisticas(request):
                 fecha_final = fecha_final + timedelta(days = 1)
             inicio_minimo = fecha_final - timedelta(weeks = 3)
             if ((fecha_final - fecha_inicial) < (fecha_final - inicio_minimo)):
-                context["mensaje"] = "Las fechas deben constituir por lo menos 4 semanas."
+                context["mensaje"] = "Las fechas deben constituir \
+por lo menos 4 semanas."
                 
             print(fecha_inicial)
             print(fecha_final)
         else:
             context["mensaje"] = "Las fechas ingresadas son inválidas."
             
-    # Sino, el rango de fechas es desde el día de hoy, 4 semanas hacia atrás.
+    # Sino, el rango de fechas es desde el día de hoy, 4 semanas 
+    #hacia atrás.
     if (not fecha_inicial or context["mensaje"] != ""):
         fecha_final = date.today()
         fecha_inicial = fecha_final - timedelta(weeks = 3)
@@ -427,7 +496,8 @@ def visualizar_estadisticas(request):
         print(fecha_inicial)
         print(fecha_final)
     
-    #df_vacunas = df_vacunas[df_vacunas["Semana"] >= fecha_inicial][df_vacunas["Semana"] <= fecha_final]
+    #df_vacunas = df_vacunas[df_vacunas["Semana"] >= fecha_inicial]
+    #[df_vacunas["Semana"] <= fecha_final]
 
     
 
@@ -444,8 +514,10 @@ def visualizar_estadisticas(request):
         vacunatorios_dicci.update({vac["id"]: vac["nombre"]}) 
     
 
-    df_vacunas["Vacuna"] = df_vacunas["Vacuna"].replace(to_replace = tipos_dicci)
-    df_vacunas["Vacunatorio"] = df_vacunas["Vacunatorio"].replace(to_replace = vacunatorios_dicci)
+    df_vacunas["Vacuna"] = df_vacunas["Vacuna"]
+        .replace(to_replace = tipos_dicci)
+    df_vacunas["Vacunatorio"] = df_vacunas["Vacunatorio"]
+        .replace(to_replace = vacunatorios_dicci)
 
 
     tipos_vacunas = list(df_vacunas['Vacuna'].unique())
@@ -458,14 +530,25 @@ def visualizar_estadisticas(request):
         semana_actual = semana_actual + pd.to_timedelta(7, unit = 'd')
     estados = list(df_vacunas["Estado"].unique())
 
-    combinaciones = list(itertools.product(tipos_vacunas, vacunatorios, semanas, estados))
-    df_vacunas = df_vacunas.set_index(['Vacuna', 'Vacunatorio', "Semana",'Estado']).reindex(combinaciones, fill_value = 0).reset_index().sort_values("Semana")
+    combinaciones = list(itertools.product(tipos_vacunas, vacunatorios, 
+        semanas, estados))
+    df_vacunas = df_vacunas
+        .set_index(['Vacuna', 'Vacunatorio', "Semana",'Estado'])
+        .reindex(combinaciones, fill_value = 0)
+        .reset_index()
+        .sort_values("Semana")
     
-    df_vacunas = df_vacunas[(df_vacunas["Semana"] >= pd.to_datetime(fecha_inicial)) & (df_vacunas["Semana"] <= pd.to_datetime(fecha_final))]
+    df_vacunas = df_vacunas[
+        (df_vacunas["Semana"] >= pd.to_datetime(fecha_inicial)) 
+        & (df_vacunas["Semana"] <= pd.to_datetime(fecha_final))
+    ]
 
-    df_polideportivo = df_vacunas[df_vacunas["Vacunatorio"] == "Polideportivo"]
-    df_corralon = df_vacunas[df_vacunas["Vacunatorio"] == "Corralón Municipal"]
-    df_hospital = df_vacunas[df_vacunas["Vacunatorio"] == "Hospital 9 de julio"]
+    df_polideportivo = (df_vacunas
+        [df_vacunas["Vacunatorio"] == "Polideportivo"])
+    df_corralon = (df_vacunas
+        [df_vacunas["Vacunatorio"] == "Corralón Municipal"])
+    df_hospital = (df_vacunas
+        [df_vacunas["Vacunatorio"] == "Hospital 9 de julio"])
 
     fig = go.Figure()
     for estado in estados:
@@ -473,16 +556,24 @@ def visualizar_estadisticas(request):
             if (vacuna == "Gripe"):
                 fig.add_trace(
                 go.Scatter(
-                x = df_polideportivo['Semana'][df_polideportivo["Estado"] == estado][df_polideportivo['Vacuna'] == vacuna],
-                y = df_polideportivo['Cantidad'][df_polideportivo["Estado"] == estado][df_polideportivo['Vacuna'] == vacuna],
+                x = (df_polideportivo['Semana']
+                    [df_polideportivo["Estado"] == estado]
+                    [df_polideportivo['Vacuna'] == vacuna]),
+                y = (df_polideportivo['Cantidad']
+                    [df_polideportivo["Estado"] == estado]
+                    [df_polideportivo['Vacuna'] == vacuna]),
                 name = estado, visible = True
                 )
             )
             else:
                 fig.add_trace(
                 go.Scatter(
-                x = df_polideportivo['Semana'][df_polideportivo["Estado"] == estado][df_polideportivo['Vacuna'] == vacuna],
-                y = df_polideportivo['Cantidad'][df_polideportivo["Estado"] == estado][df_polideportivo['Vacuna'] == vacuna],
+                x = (df_polideportivo['Semana']
+                    [df_polideportivo["Estado"] == estado]
+                    [df_polideportivo['Vacuna'] == vacuna]),
+                y = (df_polideportivo['Cantidad']
+                    [df_polideportivo["Estado"] == estado]
+                    [df_polideportivo['Vacuna'] == vacuna]),
                 name = estado, visible = False
                 )
             )
@@ -525,16 +616,24 @@ def visualizar_estadisticas(request):
             if (vacuna == "Gripe"):
                 fig.add_trace(
                 go.Scatter(
-                    x = df_corralon['Semana'][df_corralon["Estado"] == estado][df_corralon['Vacuna'] == vacuna],
-                    y = df_corralon['Cantidad'][df_corralon["Estado"] == estado][df_corralon['Vacuna'] == vacuna],
+                    x = (df_corralon['Semana']
+                        [df_corralon["Estado"] == estado]
+                        [df_corralon['Vacuna'] == vacuna]),
+                    y = (df_corralon['Cantidad']
+                        [df_corralon["Estado"] == estado]
+                        [df_corralon['Vacuna'] == vacuna]),
                     name = estado, visible = True
                 )
             )
             else:
                 fig.add_trace(
                 go.Scatter(
-                    x = df_corralon['Semana'][df_corralon["Estado"] == estado][df_corralon['Vacuna'] == vacuna],
-                    y = df_corralon['Cantidad'][df_corralon["Estado"] == estado][df_corralon['Vacuna'] == vacuna],
+                    x = (df_corralon['Semana']
+                        [df_corralon["Estado"] == estado]
+                        [df_corralon['Vacuna'] == vacuna]),
+                    y = (df_corralon['Cantidad']
+                        [df_corralon["Estado"] == estado]
+                        [df_corralon['Vacuna'] == vacuna]),
                     name = estado, visible = False
                 )
             )
@@ -577,16 +676,24 @@ def visualizar_estadisticas(request):
             if (vacuna == "Gripe"):
                 fig.add_trace(
                 go.Scatter(
-                    x = df_hospital['Semana'][df_hospital["Estado"] == estado][df_hospital['Vacuna'] == vacuna],
-                    y = df_hospital['Cantidad'][df_hospital["Estado"] == estado][df_hospital['Vacuna'] == vacuna],
+                    x = (df_hospital['Semana']
+                        [df_hospital["Estado"] == estado]
+                        [df_hospital['Vacuna'] == vacuna]),
+                    y = (df_hospital['Cantidad']
+                        [df_hospital["Estado"] == estado]
+                        [df_hospital['Vacuna'] == vacuna]),
                     name = estado, visible = True
                 )
             )
             else:
                 fig.add_trace(
                 go.Scatter(
-                    x = df_hospital['Semana'][df_hospital["Estado"] == estado][df_hospital['Vacuna'] == vacuna],
-                    y = df_hospital['Cantidad'][df_hospital["Estado"] == estado][df_hospital['Vacuna'] == vacuna],
+                    x = (df_hospital['Semana']
+                        [df_hospital["Estado"] == estado]
+                        [df_hospital['Vacuna'] == vacuna]),
+                    y = (df_hospital['Cantidad']
+                        [df_hospital["Estado"] == estado]
+                        [df_hospital['Vacuna'] == vacuna]),
                     name = estado, visible = False
                 )
             )
@@ -621,8 +728,10 @@ def visualizar_estadisticas(request):
 
     context['grafico_hosp'] = fig.to_html()
 
-    df_totales_por_vacuna = df_vacunas.groupby(["Vacuna", "Estado", "Semana"])["Cantidad"].sum().reset_index()
-
+    df_totales_vacuna = df_vacunas
+        .groupby(["Vacuna", "Estado", "Semana"])["Cantidad"]
+        .sum()
+        .reset_index()
     fig = go.Figure()
 
     for estado in estados:
@@ -630,16 +739,24 @@ def visualizar_estadisticas(request):
             if (vacuna == "Gripe"):
                 fig.add_trace(
                 go.Scatter(
-                    x = df_totales_por_vacuna['Semana'][df_totales_por_vacuna["Estado"] == estado][df_totales_por_vacuna['Vacuna'] == vacuna],
-                    y = df_totales_por_vacuna['Cantidad'][df_totales_por_vacuna["Estado"] == estado][df_totales_por_vacuna['Vacuna'] == vacuna],
+                    x = (df_totales_por_vacuna['Semana']
+                        [df_totales_por_vacuna["Estado"] == estado]
+                        [df_totales_por_vacuna['Vacuna'] == vacuna]),
+                    y = (df_totales_por_vacuna['Cantidad']
+                        [df_totales_por_vacuna["Estado"] == estado]
+                        [df_totales_por_vacuna['Vacuna'] == vacuna]),
                     name = estado, visible = True
                 )
             )
             else:
                 fig.add_trace(
                 go.Scatter(
-                    x = df_totales_por_vacuna['Semana'][df_totales_por_vacuna["Estado"] == estado][df_totales_por_vacuna['Vacuna'] == vacuna],
-                    y = df_totales_por_vacuna['Cantidad'][df_totales_por_vacuna["Estado"] == estado][df_totales_por_vacuna['Vacuna'] == vacuna],
+                    x = (df_totales_por_vacuna['Semana']
+                        [df_totales_por_vacuna["Estado"] == estado]
+                        [df_totales_por_vacuna['Vacuna'] == vacuna]),
+                    y = (df_totales_por_vacuna['Cantidad']
+                        [df_totales_por_vacuna["Estado"] == estado]
+                        [df_totales_por_vacuna['Vacuna'] == vacuna]),
                     name = estado, visible = False
                 )
             )
@@ -675,7 +792,8 @@ def visualizar_estadisticas(request):
     context['grafico_vacuna'] = fig.to_html()
 
     df_total = df_vacunas.groupby(["Estado"]).sum().reset_index()
-    fig = px.pie(df_total, values = "Cantidad", names = 'Estado', title = 'Porcentaje total segun estado')
+    fig = px.pie(df_total, values = "Cantidad", names = 'Estado', 
+        title = 'Porcentaje total segun estado')
 
     #AGREGAR RANGE_SELECTORS
 
