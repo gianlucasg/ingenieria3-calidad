@@ -19,7 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d+1b0^jee8@pi9fzuwqjp6elzn1e_ixy-$fhq)32js9j3b-5cp'
+SECRET_KEY = 'django-insecure-d+1b0^jee8@pi9fzuwqjp6elzn1e_ixy-$fhq)\
+32js9j3b-5cp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -64,7 +65,8 @@ DATE_INPUT_FORMATS = ["%d/%m/%Y",]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "VacunAsist","VacunAsist", "templates")],
+        'DIRS': [os.path.join(BASE_DIR, "VacunAsist","VacunAsist", 
+                              "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,16 +101,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.\
+password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.\
+password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.\
+password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.\
+password_validation.NumericPasswordValidator',
     },
 ]
 

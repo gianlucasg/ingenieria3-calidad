@@ -24,7 +24,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name = 'vacunaaplicada',
             name = 'vacunatorio',
-            field = models.ForeignKey(default = None, on_delete = django.db.models.deletion.DO_NOTHING, to = 'gestion_de_usuarios.vacunatorio'),
+            field = models.ForeignKey(default = None,
+                on_delete = django.db.models.deletion.DO_NOTHING, 
+                to = 'gestion_de_usuarios.vacunatorio'),
         ),
         migrations.AlterUniqueTogether(
             name = 'vacunaaplicada',
@@ -33,12 +35,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name = 'VacunasNoAplicadas',
             fields = [
-                ('id', models.BigAutoField(auto_created = True, primary_key = True, serialize = False, verbose_name = 'ID')),
+                ('id', models.BigAutoField(auto_created = True, 
+                primary_key = True, serialize = False, verbose_name = 'ID')),
                 ('fecha', models.DateField()),
                 ('estado', models.CharField(max_length = 10)),
-                ('usuario', models.ForeignKey(db_constraint = False, on_delete = django.db.models.deletion.DO_NOTHING, to = settings.AUTH_USER_MODEL)),
-                ('vacuna', models.ForeignKey(on_delete = django.db.models.deletion.DO_NOTHING, to = 'gestion_de_usuarios.vacuna')),
-                ('vacunatorio', models.ForeignKey(on_delete = django.db.models.deletion.DO_NOTHING, to = 'gestion_de_usuarios.vacunatorio')),
+                ('usuario', models.ForeignKey(db_constraint = False, 
+                    on_delete = django.db.models.deletion.DO_NOTHING, 
+                    to = settings.AUTH_USER_MODEL)),
+                ('vacuna', models.ForeignKey(
+                    on_delete = django.db.models.deletion.DO_NOTHING, 
+                    to = 'gestion_de_usuarios.vacuna')),
+                ('vacunatorio', models.ForeignKey(
+                    on_delete = django.db.models.deletion.DO_NOTHING, 
+                    to = 'gestion_de_usuarios.vacunatorio')),
             ],
             options = {
                 'verbose_name_plural': 'Vacunas_pospuestas',
