@@ -29,6 +29,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name = 'vacunatorio',
             name = 'vacunas_en_stock',
-            field = models.ManyToManyField(blank=True, default=None, related_name='vacunatorios_con_stock', through='gestion_de_usuarios.VacunaVacunatorio', to='gestion_de_usuarios.vacuna'),
+            field = models.ManyToManyField(blank=True, default=None, related_name='vacunatorios_con_stock', through='gestion_de_usuarios.VacunaVacunatorio', to= 'gestion_de_usuarios.vacuna'),
         ),
     ]
