@@ -15,24 +15,24 @@ class Migration(migrations.Migration):
             name = 'rol_actual',
             field = models.CharField(
                 blank=True, 
-                choices=[
+                choices = [
                     ('Vac', 'Vacunador'), 
                     ('Adm', 'Administrador'), 
                     ('User', 'Usuario comun')], 
-                    default=None, 
-                    max_length=4, 
-                    null=True),
-            model_name ='usuario',
+                    default = None, 
+                    max_length = 4, 
+                    null = True),
+            model_name = 'usuario',
             name = 'rol_actual',
             field = models
                 .CharField(
-                    blank=True, 
-                    choices=[
+                    blank = True, 
+                    choices = [
                         ('Vac', 'Vacunador'), 
                         ('Adm', 'Administrador'), 
                         ('User', 'Usuario comun')], 
-                    default=None, 
-                    max_length=4, 
-                    null=True),
+                    default = None, 
+                    max_length = 4, 
+                    null = True),
         ),
     ]

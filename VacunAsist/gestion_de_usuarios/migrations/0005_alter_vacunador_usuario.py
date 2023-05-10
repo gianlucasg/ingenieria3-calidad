@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             model_name = 'vacunador',
             name = 'usuario',
             field = models.OneToOneField(
-                on_delete=django.db.models.deletion.CASCADE, 
-                related_name='vacunador', to=settings.AUTH_USER_MODEL),
+                on_delete = django.db.models.deletion.CASCADE, 
+                related_name = 'vacunador', to = settings.AUTH_USER_MODEL),
         ),
     ]

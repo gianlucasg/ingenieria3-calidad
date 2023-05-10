@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name = 'usuario',
             name = 'de_riesgo',
-            field = models.BooleanField(default=False),
+            field = models.BooleanField(default = False),
         ),
     ]

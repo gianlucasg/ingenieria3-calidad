@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             model_name = 'usuario',
             name = 'password',
             field = models.CharField(
-                max_length=50, 
-                null=True, 
-                verbose_name='contrasenia'),
+                max_length = 50, 
+                null = True, 
+                verbose_name = 'contrasenia'),
         ),
     ]

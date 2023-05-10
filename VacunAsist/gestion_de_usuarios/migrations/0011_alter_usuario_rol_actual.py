@@ -14,8 +14,8 @@ class Migration(migrations.Migration):
             model_name = 'usuario',
             name = 'rol_actual',
             field = models.CharField(
-                blank=True, 
-                max_length=4, 
-                null=True),
+                blank = True, 
+                max_length = 4, 
+                null = True),
         ),
     ]

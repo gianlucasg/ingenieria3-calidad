@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             model_name = 'vacunaaplicada',
             name = 'usuario',
             field = models.ForeignKey(
-                db_constraint=False, 
-                on_delete=django.db.models.deletion.DO_NOTHING, 
-                to=settings.AUTH_USER_MODEL),
+                db_constraint = False, 
+                on_delete = django.db.models.deletion.DO_NOTHING, 
+                to = settings.AUTH_USER_MODEL),
         ),
     ]
