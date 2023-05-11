@@ -14,7 +14,7 @@ class MyAccountManager(BaseUserManager):
         dicci_campos = dict(zip(self.model.REQUIRED_FIELDS, values))
         for nombre_campo, valor in dicci_campos.items():
             if not valor: #VALOR == NULL
-                raise ValueError(f"El valor {nombre_campo} 
+                raise ValueError(f"El valor {nombre_campo} \
 debe ser especificado")
 
         user = self.model(
@@ -153,15 +153,15 @@ class Inscripcion(models.Model):
     class Meta:
         verbose_name_plural = "Inscripciones"
         
-    usuario = models
+    usuario = (models
         .ForeignKey(Usuario, 
-            on_delete = models.SET_NULL, null = True) #decidir
-    fecha = models
-        .DateField(blank = True, null = True)
-    vacunatorio = models
-        .ForeignKey(Vacunatorio, on_delete = models.PROTECT)  #decidir
-    vacuna = models
-        .ForeignKey(Vacuna, on_delete = models.PROTECT) #decidir
+            on_delete = models.SET_NULL, null = True)) #decidir
+    fecha = (models
+        .DateField(blank = True, null = True))
+    vacunatorio = (models
+        .ForeignKey(Vacunatorio, on_delete = models.PROTECT))  #decidir
+    vacuna = (models
+        .ForeignKey(Vacuna, on_delete = models.PROTECT)) #decidir
 
 
 class VacunaAplicada(models.Model):

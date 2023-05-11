@@ -466,10 +466,10 @@ def agregar_vacuna_covid_historial(request):
 
     vacuna = Vacuna.objects.get(tipo = tipo)
 
-    inscripcion = Inscripcion
+    inscripcion = (Inscripcion
         .objects
         .filter(usuario = user, vacuna = vacuna)
-        .first()
+        .first())
     fecha_turno = None
 
     #ver si no existe la inscripcion tira error, en caso de que si, 

@@ -52,23 +52,23 @@ def home(request):
         request.session["titulo"] = ""
 
         inscripciones = Inscripcion.objects.filter(usuario = user)
-        covid = inscripciones
+        covid = (inscripciones
             .filter(vacuna = Vacuna
             .objects
-            .filter(tipo = "COVID-19").first()) #ARREGLAR
-        fiebre_amarilla = inscripciones
+            .filter(tipo = "COVID-19").first())) #ARREGLAR
+        fiebre_amarilla = (inscripciones
             .filter(vacuna = Vacuna
                 .objects
                 .filter(tipo = "Fiebre_amarilla")
-                .first())
-        vacuna_fa = VacunaAplicada
+                .first()))
+        vacuna_fa = (VacunaAplicada
             .objects
             .filter(usuario = user, vacuna = Vacuna
                 .objects
                 .filter(tipo = "Fiebre_amarilla")
-                .first(),con_nosotros = True)
-        gripe = inscripciones
-            .filter(vacuna = Vacuna.objects.filter(tipo = "Gripe").first())
+                .first(),con_nosotros = True))
+        gripe = (inscripciones
+            .filter(vacuna = Vacuna.objects.filter(tipo = "Gripe").first()))
         if(vacuna_fa):
             context["vacuna_fa"] = "Si"
         if (covid):
@@ -137,8 +137,9 @@ def registrar(request):
             dni = form.cleaned_data["dni"]
             password = form.cleaned_data["password1"]
             mail = request.POST.get('email')
-            html_message = loader
-                .render_to_string('email_clave.html', {'clave': clave_alfanum})
+            html_message = (loader
+                .render_to_string('email_clave.html', 
+                                  {'clave': clave_alfanum}))
             try:
                 send_mail('Clave alfanumerica Vacunassist', "", 
                     EMAIL_HOST_USER, [mail], html_message = html_message)
@@ -176,10 +177,10 @@ def ver_turnos_del_dia(request):
     context = request.session.get("context", {})
     if (context == {}):
         context["mensaje"] = request.session.get('mensaje', "")
-    turnos = Inscripcion
+    turnos = (Inscripcion
         .objects
         .filter(fecha = date.today())
-        .filter(vacunatorio_id = user.vacunador.vacunatorio_de_trabajo)
+        .filter(vacunatorio_id = user.vacunador.vacunatorio_de_trabajo))
     hoy = str(date.today())
     tipos = Vacuna.objects.all()
     
@@ -284,11 +285,11 @@ def descargar_certificado_fiebre_amarilla(request):
     context = dict.fromkeys("user", "vacuna")
     usuario = request.user
     context["user"] = usuario
-    vacuna = VacunaAplicada
+    vacuna = (VacunaAplicada
         .objects
         .filter(usuario = usuario, 
             vacuna = Vacuna.objects.get(tipo = "Fiebre_amarilla"))
-        .first()
+        .first())
     context["vacuna"] = vacuna
     filename = "certificado.pdf"
     path_certificado = os.path.normpath(os.path.join(Path(__file__), 
@@ -348,8 +349,7 @@ valido de la República Argentina."
             persona = json.loads(persona)
             context["dni"] = dni
             context["nombre_apellido"] = persona["apellido"]
-            context["fecha_nacimiento"] = 
-                str(datetime
+            context["fecha_nacimiento"] = str(datetime
                     .strptime(persona["fechaNacimiento"][:10], "%Y-%m-%d")
                     .date())
             context["registrado"] = "no"
@@ -365,10 +365,10 @@ def alta_vacunador(request):
     dni = request.POST.get("Dni")
     vacunatorio_trabajo = request.POST.get("VacunatorioTrabajo")
     usuario = Usuario.objects.filter(dni = dni).first()
-    vacunatorio = Vacunatorio
+    vacunatorio = (Vacunatorio
         .objects
         .filter(nombre = vacunatorio_trabajo)
-        .first()
+        .first())
     if (usuario):
         if (usuario.es_vacunador):
             context["mensaje"] = "El usuario ya es un vacunador."
@@ -379,11 +379,11 @@ def alta_vacunador(request):
             vacunador.save()
             usuario.vacunador = vacunador
             usuario.save()
-            context["mensaje"] = 
-                "El vacunador ha sido dado de alta exitosamente."
+            context["mensaje"] = "El vacunador ha sido dado de alta \
+exitosamente."
     else:    
-        context["mensaje"] = 
-            "El DNI ingresado no se encuentra registrado en el sistema"
+        context["mensaje"] = "El DNI ingresado no se encuentra registrado en \
+el sistema"
     request.session["context"] = context
     return redirect(gestionar_usuarios_admin)
 
@@ -400,11 +400,11 @@ def alta_administrador(request):
         else:
             usuario.es_administrador = True
             usuario.save()
-            context["mensaje"] = 
-                "El administrador ha sido dado de alta exitosamente."
+            context["mensaje"] = "El administrador ha sido dado de alta \
+exitosamente."
     else:
-        context["mensaje"] = 
-            "El DNI ingresado no se encuentra registrado en el sistema"
+        context["mensaje"] = "El DNI ingresado no se encuentra registrado en \
+el sistema"
     request.session["context"] = context
 
     return redirect(gestionar_usuarios_admin)
@@ -449,16 +449,16 @@ def visualizar_estadisticas(request):
     pospuestas_y_canceladas = VacunasNoAplicadas.objects.all().values()
     vac_no_aplicadas_df = pd.DataFrame(pospuestas_y_canceladas)
     df_vacunas = vac_aplicadas_df.append(vac_no_aplicadas_df)
-    df_vacunas["estado"] = df_vacunas["estado"]
-        .replace(to_replace = np.nan, value = "Aplicado")
+    df_vacunas["estado"] = (df_vacunas["estado"]
+        .replace(to_replace = np.nan, value = "Aplicado"))
     df_vacunas['fecha'] = pd.to_datetime(df_vacunas['fecha'])
     df_vacunas['fecha'] = df_vacunas['fecha'] - pd.to_timedelta(7, unit = 'd')
     df_vacunas = df_vacunas.groupby([
             'vacuna_id', 'vacunatorio_id', 'estado', 
             pd.Grouper(key = 'fecha', freq = 'W-MON')
-        ])["id"]
+        ])(["id"]
         .count()
-        .reset_index()
+        .reset_index())
     df_vacunas.columns = ["Vacuna", "Vacunatorio", "Estado", "Semana", 
         "Cantidad"]
 
@@ -514,10 +514,10 @@ por lo menos 4 semanas."
         vacunatorios_dicci.update({vac["id"]: vac["nombre"]}) 
     
 
-    df_vacunas["Vacuna"] = df_vacunas["Vacuna"]
-        .replace(to_replace = tipos_dicci)
-    df_vacunas["Vacunatorio"] = df_vacunas["Vacunatorio"]
-        .replace(to_replace = vacunatorios_dicci)
+    df_vacunas["Vacuna"] = (df_vacunas["Vacuna"]
+        .replace(to_replace = tipos_dicci))
+    df_vacunas["Vacunatorio"] = (df_vacunas["Vacunatorio"]
+        .replace(to_replace = vacunatorios_dicci))
 
 
     tipos_vacunas = list(df_vacunas['Vacuna'].unique())
@@ -532,11 +532,11 @@ por lo menos 4 semanas."
 
     combinaciones = list(itertools.product(tipos_vacunas, vacunatorios, 
         semanas, estados))
-    df_vacunas = df_vacunas
+    df_vacunas = (df_vacunas
         .set_index(['Vacuna', 'Vacunatorio', "Semana",'Estado'])
         .reindex(combinaciones, fill_value = 0)
         .reset_index()
-        .sort_values("Semana")
+        .sort_values("Semana"))
     
     df_vacunas = df_vacunas[
         (df_vacunas["Semana"] >= pd.to_datetime(fecha_inicial)) 
@@ -728,10 +728,10 @@ por lo menos 4 semanas."
 
     context['grafico_hosp'] = fig.to_html()
 
-    df_totales_vacuna = df_vacunas
+    df_totales_por_vacuna = (df_vacunas
         .groupby(["Vacuna", "Estado", "Semana"])["Cantidad"]
         .sum()
-        .reset_index()
+        .reset_index())
     fig = go.Figure()
 
     for estado in estados:
@@ -740,8 +740,8 @@ por lo menos 4 semanas."
                 fig.add_trace(
                 go.Scatter(
                     x = (df_totales_por_vacuna['Semana']
-                        [df_totales_por_vacuna["Estado"] == estado]
-                        [df_totales_por_vacuna['Vacuna'] == vacuna]),
+                         [df_totales_por_vacuna["Estado"] == estado]
+                         [df_totales_por_vacuna['Vacuna'] == vacuna]),
                     y = (df_totales_por_vacuna['Cantidad']
                         [df_totales_por_vacuna["Estado"] == estado]
                         [df_totales_por_vacuna['Vacuna'] == vacuna]),
